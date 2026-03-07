@@ -29,6 +29,7 @@
   })();
 </script>
 <style>
+  /* ── THEME VARIABLES ────────────────────────────────────────────────── */
   :root {
     --bg:#f0f4f8; --surface:#ffffff; --surface2:#f7fafc; --border:#e2e8f0;
     --text:#1a1a2e; --text2:#4a5568; --text3:#5a6a80; --text4:#607080;
@@ -72,12 +73,14 @@
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s;}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
+  /* ── LAYOUT & SETUP ──────────────────────────────────────────────────── */
   #setup-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px;background:linear-gradient(135deg,var(--setup-from) 0%,var(--setup-mid) 50%,var(--setup-to) 100%);}
   #setup-screen h1{color:var(--gold);font-size:28px;margin-bottom:8px;text-align:center;}
   #setup-screen p{color:var(--text4);text-align:center;margin-bottom:32px;font-size:14px;}
   .setup-card{background:var(--surface);border-radius:20px;padding:28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
   .setup-card h2{font-size:16px;color:var(--text2);margin-bottom:20px;text-align:center;}
 
+  /* ── MODALS ──────────────────────────────────────────────────────────── */
   .modal-overlay{position:fixed;inset:0;background:var(--modal-bg);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
   .modal-overlay.active{display:flex;}
   .modal-card{background:var(--surface);border-radius:20px;padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;}
@@ -112,9 +115,11 @@
   label{display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
   input[type=number],input[type=date],input[type=text],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;color:var(--text);background:var(--surface2);transition:border-color 0.2s,background 0.3s;}
   input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);background:var(--surface);}
+  .btn:focus-visible,.nav-item:focus-visible,.tab:focus-visible,.accordion-hdr:focus-visible,.mpicker-mo:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px;}
   textarea{resize:none;height:60px;font-family:inherit;}
   select option{background:var(--surface);color:var(--text);}
 
+  /* ── BUTTONS & FORMS ─────────────────────────────────────────────────── */
   .btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;}
   .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:white;}
   .btn-gold:active{transform:scale(0.98);}
@@ -164,6 +169,7 @@
   .tab{flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface2);font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;text-align:center;transition:all 0.2s;}
   .tab.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:white;border-color:transparent;}
 
+  /* ── HISTORY & TRANSACTIONS ──────────────────────────────────────────── */
   .hist-item{padding:11px 0;border-bottom:1px solid var(--border);}
   .hist-item:last-child{border-bottom:none;}
   .hist-item-top{display:flex;justify-content:space-between;align-items:flex-start;}
@@ -625,6 +631,8 @@
 </div>
 
 <!-- MAIN APP -->
+<a href="#page-home" class="sr-only" style="position:absolute;top:-100px;left:0;z-index:9999;background:var(--gold);color:#000;padding:8px 16px;font-size:14px;border-radius:0 0 8px 0" onfocus="this.style.top='0'" onblur="this.style.top='-100px'">Skip to content</a>
+<main>
 <div id="app">
   <div class="app-header">
     <div class="app-header-top">
@@ -920,6 +928,27 @@
       </div>
     </div>
 
+    <!-- BUDGET CYCLE -->
+    <div class="section accordion" id="acc-budget-cycle">
+      <div role="button" tabindex="0" aria-expanded="false" aria-controls="acc-budget-cycle-body" class="accordion-hdr" onclick="toggleAccordion('acc-budget-cycle')">
+        <h2><span class="icon">📅</span> <span data-i18n="budgetCycle">Budget cycle</span></h2>
+        <span class="accordion-arrow">▾</span>
+      </div>
+      <div class="accordion-body" id="acc-budget-cycle-body">
+        <div class="form-row">
+          <label data-i18n="budgetCycle" for="cycle-select">Budget cycle</label>
+          <select id="cycle-select" onchange="changeBudgetCycle()">
+            <option value="0" data-i18n="cycleCalendar">Calendar (1st of month)</option>
+            <option value="-1" data-i18n="cyclePayday">From payday</option>
+          </select>
+        </div>
+        <div class="form-row" id="payday-row" style="display:none">
+          <label data-i18n="paydayLabel" for="payday-input">Payday (day of month)</label>
+          <input type="number" id="payday-input" min="1" max="28" step="1" value="1" onchange="changePayday()">
+        </div>
+      </div>
+    </div>
+
     <!-- CATEGORIES -->
     <div class="section accordion" id="acc-cats">
       <div role="button" tabindex="0" aria-expanded="false" aria-controls="acc-cats-body" class="accordion-hdr" onclick="toggleAccordion('acc-cats')">
@@ -1064,7 +1093,7 @@
           </button>
         </div>
         <input type="file" id="restore-file" accept=".json" style="display:none" onchange="restoreData(event)">
-        <div class="backup-info" data-i18n-html="backupInfo">Backup contains <strong>all data</strong>: transactions, templates, balances, categories, settings.</div>
+        <div class="backup-info" data-i18n="backupInfo">Backup contains all data: transactions, templates, balances, categories, settings.</div>
         <div class="backup-meta" id="backup-meta"></div>
       </div>
     </div>
@@ -1092,6 +1121,7 @@
   </div><!-- /page-settings -->
 
 </div><!-- /app -->
+</main>
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
@@ -1142,7 +1172,7 @@ en:{
   otherDeleted:'Other (deleted types)',monthNoteLabel:'Month note',noteSaved:'saved ✓',monthNotePH:'Notes, plans, remarks for this month...',
   // History
   histTitle:'Transaction History',histSearch:'🔍  Search by category, amount, note...',
-  histAll:'All',histExp:'Expenses',histInc:'Income',histEmpty:'No transactions this month',
+  histAll:'All',histExp:'Expenses',histInc:'Income',histEmpty:'No transactions this month',histShowMore:'Show more',
   histSearchEmpty:'No results for',histFound:'Found:',histTransactions:'transactions',
   histEdit:'✏️ Edit',histDel:'🗑️ Delete',
   // Filters
@@ -1175,6 +1205,7 @@ en:{
   goalSaveChanges:'SAVE CHANGES',
   // Settings
   currencyTitle:'Currency',currencyLabel:'Currency symbol',currencyHint:'Changing symbol is cosmetic only — amounts are not converted.',
+  budgetCycle:'Budget cycle',cycleCalendar:'Calendar (1st of month)',cyclePayday:'From payday',paydayLabel:'Payday (day of month)',
   catTitle:'Categories',catPH:'New category...',catAdd:'+ Add',catExists:'Category already exists',
   expTypeTitle:'Expense Types',expTypePH:'New type (e.g. SPORT)...',expTypeAdd:'+ Add',
   expTypeProtected:'FIXED and VARIABLE are protected.',expTypeReserved:'Name reserved by system',expTypeExists:'Type already exists',
@@ -1185,7 +1216,7 @@ en:{
   tplIncTitle:'Recurring Income – Templates',tplIncNamePH:'e.g. Salary',tplIncAdd:'+ ADD TEMPLATE',tplIncAdded:'Income template added ✓',
   tplActiveUntil:'Active until',tplNoEndDate:'No end date (permanent)',clearEndDate:'Clear end date',tplExpired:'expired',
   backupTitle:'Backup & Restore',backupExport:'Export backup',backupImport:'Load backup',
-  backupInfo:'Backup contains <strong>all data</strong>: transactions, templates, balances, categories, settings.',
+  backupInfo:'Backup contains all data: transactions, templates, balances, categories, settings.',
   backupDone:'Backup exported ✓',restoreDone:'Data restored ✓',restoreBadFile:'❌ Invalid backup file',restoreBroken:'❌ File is corrupted',
   supportTitle:'Like the app?',supportSub:'If Budget Tracker helps manage your finances, you can support further development.',supportBtn:'☕ Buy Me a Coffee',
   dangerTitle:'Data Management',closeMonthBtn:'📅 Close month (new month)',resetBtn:'⚠️ Full reset',
@@ -1265,7 +1296,7 @@ pl:{
   remaining:'Pozostało',forecastLabel:'Prognoza konta (koniec',top5:'TOP 5 ZMIENNYCH',
   otherDeleted:'Inne (usunięte typy)',monthNoteLabel:'Notatka do miesiąca',noteSaved:'zapisano ✓',monthNotePH:'Notatki, plany, uwagi do tego miesiąca...',
   histTitle:'Historia Transakcji',histSearch:'🔍  Szukaj po kategorii, kwocie, notatce...',
-  histAll:'Wszystkie',histExp:'Wydatki',histInc:'Wpływy',histEmpty:'Brak transakcji w tym miesiącu',
+  histAll:'Wszystkie',histExp:'Wydatki',histInc:'Wpływy',histEmpty:'Brak transakcji w tym miesiącu',histShowMore:'Pokaż więcej',
   histSearchEmpty:'Brak wyników dla',histFound:'Znaleziono:',histTransactions:'transakcji',
   histEdit:'✏️ Edytuj',histDel:'🗑️ Usuń',
   filterLabel:'Filtry',filterCatPH:'— Kategoria —',filterTypePH:'— Typ wydatku —',filterSourcePH:'— Źródło / Cel —',
@@ -1290,6 +1321,7 @@ pl:{
   goalDaysLeft:'dni do terminu',goalDaysAgo:'Termin minął',goalDaysAgoSuffix:' dni temu',goalEditTitle:'✏️ Edytuj Cel',
   goalSaveChanges:'ZAPISZ ZMIANY',
   currencyTitle:'Waluta',currencyLabel:'Symbol waluty',currencyHint:'Zmiana symbolu dotyczy wyświetlania — nie przelicza kwot.',
+  budgetCycle:'Cykl budżetowy',cycleCalendar:'Kalendarzowy (1. dnia miesiąca)',cyclePayday:'Od dnia wypłaty',paydayLabel:'Dzień wypłaty',
   catTitle:'Kategorie Wydatków',catPH:'Nowa kategoria...',catAdd:'+ Dodaj',catExists:'Kategoria już istnieje',
   expTypeTitle:'Typy Wydatków',expTypePH:'Nowy typ (np. SPORT)...',expTypeAdd:'+ Dodaj',
   expTypeProtected:'STAŁY i ZMIENNY są chronione.',expTypeReserved:'Nazwa zarezerwowana przez system',expTypeExists:'Typ już istnieje',
@@ -1300,7 +1332,7 @@ pl:{
   tplIncTitle:'Wpływy Cykliczne – Szablony',tplIncNamePH:'np. Wynagrodzenie',tplIncAdd:'+ DODAJ SZABLON',tplIncAdded:'Szablon wpływu dodany ✓',
   tplActiveUntil:'Aktywny do',tplNoEndDate:'Bezterminowo',clearEndDate:'Wyczyść datę końcową',tplExpired:'wygasł',
   backupTitle:'Backup & Restore',backupExport:'Eksportuj backup',backupImport:'Wczytaj backup',
-  backupInfo:'Backup zawiera <strong>wszystkie dane</strong>: transakcje, szablony, salda, kategorie, ustawienia.',
+  backupInfo:'Backup zawiera wszystkie dane: transakcje, szablony, salda, kategorie, ustawienia.',
   backupDone:'Backup wyeksportowany ✓',restoreDone:'Dane przywrócone ✓',restoreBadFile:'❌ Nieprawidłowy plik backup',restoreBroken:'❌ Plik jest uszkodzony',
   supportTitle:'Podoba Ci się aplikacja?',supportSub:'Jeśli Budget Tracker pomaga Ci w zarządzaniu finansami, możesz wesprzeć dalszy rozwój.',supportBtn:'☕ Buy Me a Coffee',
   dangerTitle:'Zarządzanie Danymi',closeMonthBtn:'📅 Zamknij miesiąc (nowy miesiąc)',resetBtn:'⚠️ Reset całkowity',
@@ -1367,7 +1399,7 @@ de:{
   remaining:'Verbleibend',forecastLabel:'Kontoprognose (Ende',top5:'TOP 5 VARIABEL',
   otherDeleted:'Andere (gelöschte Typen)',monthNoteLabel:'Monatsnotiz',noteSaved:'gespeichert ✓',monthNotePH:'Notizen, Pläne, Anmerkungen für diesen Monat...',
   histTitle:'Transaktionsverlauf',histSearch:'🔍  Nach Kategorie, Betrag, Notiz suchen...',
-  histAll:'Alle',histExp:'Ausgaben',histInc:'Einnahmen',histEmpty:'Keine Transaktionen in diesem Monat',
+  histAll:'Alle',histExp:'Ausgaben',histInc:'Einnahmen',histEmpty:'Keine Transaktionen in diesem Monat',histShowMore:'Mehr anzeigen',
   histSearchEmpty:'Keine Ergebnisse für',histFound:'Gefunden:',histTransactions:'Transaktionen',
   histEdit:'✏️ Bearbeiten',histDel:'🗑️ Löschen',
   filterLabel:'Filter',filterCatPH:'— Kategorie —',filterTypePH:'— Ausgabentyp —',filterSourcePH:'— Quelle / Ziel —',
@@ -1392,6 +1424,7 @@ de:{
   goalDaysLeft:'Tage übrig',goalDaysAgo:'Frist abgelaufen',goalDaysAgoSuffix:' Tage her',goalEditTitle:'✏️ Ziel bearbeiten',
   goalSaveChanges:'ÄNDERUNGEN SPEICHERN',
   currencyTitle:'Währung',currencyLabel:'Währungssymbol',currencyHint:'Symboländerung ist nur kosmetisch — Beträge werden nicht umgerechnet.',
+  budgetCycle:'Budgetzyklus',cycleCalendar:'Kalender (1. des Monats)',cyclePayday:'Ab Zahltag',paydayLabel:'Zahltag (Tag des Monats)',
   catTitle:'Kategorien',catPH:'Neue Kategorie...',catAdd:'+ Hinzufügen',catExists:'Kategorie existiert bereits',
   expTypeTitle:'Ausgabentypen',expTypePH:'Neuer Typ (z.B. SPORT)...',expTypeAdd:'+ Hinzufügen',
   expTypeProtected:'FEST und VARIABEL sind geschützt.',expTypeReserved:'Name vom System reserviert',expTypeExists:'Typ existiert bereits',
@@ -1402,7 +1435,7 @@ de:{
   tplIncTitle:'Wiederkehrende Einnahmen – Vorlagen',tplIncNamePH:'z.B. Gehalt',tplIncAdd:'+ VORLAGE HINZUFÜGEN',tplIncAdded:'Einnahmevorlage hinzugefügt ✓',
   tplActiveUntil:'Aktiv bis',tplNoEndDate:'Kein Enddatum (unbefristet)',clearEndDate:'Enddatum löschen',tplExpired:'abgelaufen',
   backupTitle:'Sicherung & Wiederherstellung',backupExport:'Sicherung exportieren',backupImport:'Sicherung laden',
-  backupInfo:'Sicherung enthält <strong>alle Daten</strong>: Transaktionen, Vorlagen, Salden, Kategorien, Einstellungen.',
+  backupInfo:'Sicherung enthält alle Daten: Transaktionen, Vorlagen, Salden, Kategorien, Einstellungen.',
   backupDone:'Sicherung exportiert ✓',restoreDone:'Daten wiederhergestellt ✓',restoreBadFile:'❌ Ungültige Sicherungsdatei',restoreBroken:'❌ Datei ist beschädigt',
   supportTitle:'Gefällt dir die App?',supportSub:'Wenn Budget Tracker dir bei deinen Finanzen hilft, kannst du die Weiterentwicklung unterstützen.',supportBtn:'☕ Kauf mir einen Kaffee',
   dangerTitle:'Datenverwaltung',closeMonthBtn:'📅 Monat abschließen',resetBtn:'⚠️ Vollständiger Reset',
@@ -1469,7 +1502,7 @@ fr:{
   remaining:'Restant',forecastLabel:'Prévision du compte (fin',top5:'TOP 5 VARIABLES',
   otherDeleted:'Autres (types supprimés)',monthNoteLabel:'Note du mois',noteSaved:'enregistré ✓',monthNotePH:'Notes, plans, remarques pour ce mois...',
   histTitle:'Historique des transactions',histSearch:'🔍  Rechercher par catégorie, montant, note...',
-  histAll:'Tout',histExp:'Dépenses',histInc:'Revenus',histEmpty:'Aucune transaction ce mois',
+  histAll:'Tout',histExp:'Dépenses',histInc:'Revenus',histEmpty:'Aucune transaction ce mois',histShowMore:'Afficher plus',
   histSearchEmpty:'Aucun résultat pour',histFound:'Trouvé :',histTransactions:'transactions',
   histEdit:'✏️ Modifier',histDel:'🗑️ Supprimer',
   filterLabel:'Filtres',filterCatPH:'— Catégorie —',filterTypePH:'— Type de dépense —',filterSourcePH:'— Source / Dest —',
@@ -1494,6 +1527,7 @@ fr:{
   goalDaysLeft:'jours restants',goalDaysAgo:'Échéance dépassée',goalDaysAgoSuffix:' jours',goalEditTitle:'✏️ Modifier l\'objectif',
   goalSaveChanges:'ENREGISTRER',
   currencyTitle:'Devise',currencyLabel:'Symbole monétaire',currencyHint:'Le changement de symbole est cosmétique — les montants ne sont pas convertis.',
+  budgetCycle:'Cycle budgétaire',cycleCalendar:'Calendaire (1er du mois)',cyclePayday:'À partir du jour de paie',paydayLabel:'Jour de paie (jour du mois)',
   catTitle:'Catégories',catPH:'Nouvelle catégorie...',catAdd:'+ Ajouter',catExists:'La catégorie existe déjà',
   expTypeTitle:'Types de dépenses',expTypePH:'Nouveau type (ex. SPORT)...',expTypeAdd:'+ Ajouter',
   expTypeProtected:'FIXE et VARIABLE sont protégés.',expTypeReserved:'Nom réservé par le système',expTypeExists:'Le type existe déjà',
@@ -1504,7 +1538,7 @@ fr:{
   tplIncTitle:'Revenus récurrents – Modèles',tplIncNamePH:'ex. Salaire',tplIncAdd:'+ AJOUTER UN MODÈLE',tplIncAdded:'Modèle de revenu ajouté ✓',
   tplActiveUntil:'Actif jusqu\'à',tplNoEndDate:'Pas de date de fin (permanent)',clearEndDate:'Effacer la date de fin',tplExpired:'expiré',
   backupTitle:'Sauvegarde & Restauration',backupExport:'Exporter la sauvegarde',backupImport:'Charger la sauvegarde',
-  backupInfo:'La sauvegarde contient <strong>toutes les données</strong> : transactions, modèles, soldes, catégories, paramètres.',
+  backupInfo:'La sauvegarde contient toutes les données : transactions, modèles, soldes, catégories, paramètres.',
   backupDone:'Sauvegarde exportée ✓',restoreDone:'Données restaurées ✓',restoreBadFile:'❌ Fichier de sauvegarde invalide',restoreBroken:'❌ Le fichier est corrompu',
   supportTitle:'Vous aimez l\'appli ?',supportSub:'Si Budget Tracker vous aide à gérer vos finances, vous pouvez soutenir le développement.',supportBtn:'☕ Offrez-moi un café',
   dangerTitle:'Gestion des données',closeMonthBtn:'📅 Clôturer le mois',resetBtn:'⚠️ Réinitialisation complète',
@@ -1571,7 +1605,7 @@ it:{
   remaining:'Rimanente',forecastLabel:'Previsione conto (fine',top5:'TOP 5 VARIABILI',
   otherDeleted:'Altro (tipi eliminati)',monthNoteLabel:'Nota del mese',noteSaved:'salvato ✓',monthNotePH:'Note, piani, osservazioni per questo mese...',
   histTitle:'Cronologia transazioni',histSearch:'🔍  Cerca per categoria, importo, nota...',
-  histAll:'Tutti',histExp:'Spese',histInc:'Entrate',histEmpty:'Nessuna transazione questo mese',
+  histAll:'Tutti',histExp:'Spese',histInc:'Entrate',histEmpty:'Nessuna transazione questo mese',histShowMore:'Mostra di più',
   histSearchEmpty:'Nessun risultato per',histFound:'Trovati:',histTransactions:'transazioni',
   histEdit:'✏️ Modifica',histDel:'🗑️ Elimina',
   filterLabel:'Filtri',filterCatPH:'— Categoria —',filterTypePH:'— Tipo di spesa —',filterSourcePH:'— Fonte / Dest —',
@@ -1596,6 +1630,7 @@ it:{
   goalDaysLeft:'giorni rimasti',goalDaysAgo:'Scadenza superata',goalDaysAgoSuffix:' giorni fa',goalEditTitle:'✏️ Modifica obiettivo',
   goalSaveChanges:'SALVA MODIFICHE',
   currencyTitle:'Valuta',currencyLabel:'Simbolo valuta',currencyHint:'Il cambio di simbolo è solo estetico — gli importi non vengono convertiti.',
+  budgetCycle:'Ciclo di budget',cycleCalendar:'Calendario (1° del mese)',cyclePayday:'Dal giorno di paga',paydayLabel:'Giorno di paga (giorno del mese)',
   catTitle:'Categorie',catPH:'Nuova categoria...',catAdd:'+ Aggiungi',catExists:'La categoria esiste già',
   expTypeTitle:'Tipi di spesa',expTypePH:'Nuovo tipo (es. SPORT)...',expTypeAdd:'+ Aggiungi',
   expTypeProtected:'FISSO e VARIABILE sono protetti.',expTypeReserved:'Nome riservato dal sistema',expTypeExists:'Il tipo esiste già',
@@ -1606,7 +1641,7 @@ it:{
   tplIncTitle:'Entrate ricorrenti – Modelli',tplIncNamePH:'es. Stipendio',tplIncAdd:'+ AGGIUNGI MODELLO',tplIncAdded:'Modello entrata aggiunto ✓',
   tplActiveUntil:'Attivo fino a',tplNoEndDate:'Nessuna scadenza (permanente)',clearEndDate:'Cancella data di fine',tplExpired:'scaduto',
   backupTitle:'Backup e Ripristino',backupExport:'Esporta backup',backupImport:'Carica backup',
-  backupInfo:'Il backup contiene <strong>tutti i dati</strong>: transazioni, modelli, saldi, categorie, impostazioni.',
+  backupInfo:'Il backup contiene tutti i dati: transazioni, modelli, saldi, categorie, impostazioni.',
   backupDone:'Backup esportato ✓',restoreDone:'Dati ripristinati ✓',restoreBadFile:'❌ File di backup non valido',restoreBroken:'❌ Il file è corrotto',
   supportTitle:'Ti piace l\'app?',supportSub:'Se Budget Tracker ti aiuta a gestire le finanze, puoi sostenere lo sviluppo.',supportBtn:'☕ Offrimi un caffè',
   dangerTitle:'Gestione dati',closeMonthBtn:'📅 Chiudi il mese',resetBtn:'⚠️ Reset completo',
@@ -1673,7 +1708,7 @@ ru:{
   remaining:'Остаток',forecastLabel:'Прогноз счёта (конец',top5:'ТОП 5 ПЕРЕМЕННЫХ',
   otherDeleted:'Прочее (удалённые типы)',monthNoteLabel:'Заметка месяца',noteSaved:'сохранено ✓',monthNotePH:'Заметки, планы, наблюдения за этот месяц...',
   histTitle:'История транзакций',histSearch:'🔍  Поиск по категории, сумме, заметке...',
-  histAll:'Все',histExp:'Расходы',histInc:'Доходы',histEmpty:'Нет транзакций в этом месяце',
+  histAll:'Все',histExp:'Расходы',histInc:'Доходы',histEmpty:'Нет транзакций в этом месяце',histShowMore:'Показать ещё',
   histSearchEmpty:'Нет результатов для',histFound:'Найдено:',histTransactions:'транзакций',
   histEdit:'✏️ Изменить',histDel:'🗑️ Удалить',
   filterLabel:'Фильтры',filterCatPH:'— Категория —',filterTypePH:'— Тип расхода —',filterSourcePH:'— Источник / Назн. —',
@@ -1698,6 +1733,7 @@ ru:{
   goalDaysLeft:'дней осталось',goalDaysAgo:'Срок истёк',goalDaysAgoSuffix:' дней назад',goalEditTitle:'✏️ Изменить цель',
   goalSaveChanges:'СОХРАНИТЬ ИЗМЕНЕНИЯ',
   currencyTitle:'Валюта',currencyLabel:'Символ валюты',currencyHint:'Смена символа — только косметическая, суммы не конвертируются.',
+  budgetCycle:'Бюджетный цикл',cycleCalendar:'Календарный (1-е число)',cyclePayday:'С дня зарплаты',paydayLabel:'День зарплаты (число месяца)',
   catTitle:'Категории',catPH:'Новая категория...',catAdd:'+ Добавить',catExists:'Категория уже существует',
   expTypeTitle:'Типы расходов',expTypePH:'Новый тип (напр. СПОРТ)...',expTypeAdd:'+ Добавить',
   expTypeProtected:'ПОСТОЯННЫЕ и ПЕРЕМЕННЫЕ защищены.',expTypeReserved:'Имя зарезервировано системой',expTypeExists:'Тип уже существует',
@@ -1708,7 +1744,7 @@ ru:{
   tplIncTitle:'Регулярные доходы – Шаблоны',tplIncNamePH:'напр. Зарплата',tplIncAdd:'+ ДОБАВИТЬ ШАБЛОН',tplIncAdded:'Шаблон дохода добавлен ✓',
   tplActiveUntil:'Активен до',tplNoEndDate:'Без срока (постоянно)',clearEndDate:'Очистить дату окончания',tplExpired:'истёк',
   backupTitle:'Резервная копия',backupExport:'Экспорт копии',backupImport:'Загрузить копию',
-  backupInfo:'Копия содержит <strong>все данные</strong>: транзакции, шаблоны, балансы, категории, настройки.',
+  backupInfo:'Копия содержит все данные: транзакции, шаблоны, балансы, категории, настройки.',
   backupDone:'Копия экспортирована ✓',restoreDone:'Данные восстановлены ✓',restoreBadFile:'❌ Неверный файл',restoreBroken:'❌ Файл повреждён',
   supportTitle:'Нравится приложение?',supportSub:'Если Budget Tracker помогает управлять финансами, вы можете поддержать разработку.',supportBtn:'☕ Угостить кофе',
   dangerTitle:'Управление данными',closeMonthBtn:'📅 Закрыть месяц',resetBtn:'⚠️ Полный сброс',
@@ -1775,7 +1811,7 @@ uk:{
   remaining:'Залишок',forecastLabel:'Прогноз рахунку (кінець',top5:'ТОП 5 ЗМІННИХ',
   otherDeleted:'Інше (видалені типи)',monthNoteLabel:'Нотатка місяця',noteSaved:'збережено ✓',monthNotePH:'Нотатки, плани, зауваження на цей місяць...',
   histTitle:'Історія транзакцій',histSearch:'🔍  Пошук за категорією, сумою, нотаткою...',
-  histAll:'Всі',histExp:'Витрати',histInc:'Доходи',histEmpty:'Немає транзакцій у цьому місяці',
+  histAll:'Всі',histExp:'Витрати',histInc:'Доходи',histEmpty:'Немає транзакцій у цьому місяці',histShowMore:'Показати більше',
   histSearchEmpty:'Нічого не знайдено для',histFound:'Знайдено:',histTransactions:'транзакцій',
   histEdit:'✏️ Змінити',histDel:'🗑️ Видалити',
   filterLabel:'Фільтри',filterCatPH:'— Категорія —',filterTypePH:'— Тип витрати —',filterSourcePH:'— Джерело / Призн. —',
@@ -1800,6 +1836,7 @@ uk:{
   goalDaysLeft:'днів залишилось',goalDaysAgo:'Термін минув',goalDaysAgoSuffix:' днів тому',goalEditTitle:'✏️ Змінити ціль',
   goalSaveChanges:'ЗБЕРЕГТИ ЗМІНИ',
   currencyTitle:'Валюта',currencyLabel:'Символ валюти',currencyHint:'Зміна символу — лише косметична, суми не конвертуються.',
+  budgetCycle:'Бюджетний цикл',cycleCalendar:'Календарний (1-е число)',cyclePayday:'З дня зарплати',paydayLabel:'День зарплати (число місяця)',
   catTitle:'Категорії',catPH:'Нова категорія...',catAdd:'+ Додати',catExists:'Категорія вже існує',
   expTypeTitle:'Типи витрат',expTypePH:'Новий тип (напр. СПОРТ)...',expTypeAdd:'+ Додати',
   expTypeProtected:'ПОСТІЙНІ та ЗМІННІ захищені.',expTypeReserved:'Назва зарезервована системою',expTypeExists:'Тип вже існує',
@@ -1810,7 +1847,7 @@ uk:{
   tplIncTitle:'Регулярні доходи – Шаблони',tplIncNamePH:'напр. Зарплата',tplIncAdd:'+ ДОДАТИ ШАБЛОН',tplIncAdded:'Шаблон доходу додано ✓',
   tplActiveUntil:'Активний до',tplNoEndDate:'Без терміну (постійно)',clearEndDate:'Очистити дату закінчення',tplExpired:'закінчився',
   backupTitle:'Резервна копія',backupExport:'Експорт копії',backupImport:'Завантажити копію',
-  backupInfo:'Копія містить <strong>усі дані</strong>: транзакції, шаблони, баланси, категорії, налаштування.',
+  backupInfo:'Копія містить усі дані: транзакції, шаблони, баланси, категорії, налаштування.',
   backupDone:'Копію експортовано ✓',restoreDone:'Дані відновлено ✓',restoreBadFile:'❌ Невірний файл',restoreBroken:'❌ Файл пошкоджено',
   supportTitle:'Подобається додаток?',supportSub:'Якщо Budget Tracker допомагає керувати фінансами, ви можете підтримати розробку.',supportBtn:'☕ Пригостити кавою',
   dangerTitle:'Керування даними',closeMonthBtn:'📅 Закрити місяць',resetBtn:'⚠️ Повне скидання',
@@ -1890,14 +1927,20 @@ const _defaultIncomeTypes={
 function defaultCats(lang){return(_defaultCats[lang]||_defaultCats['en']).slice();}
 function defaultIncomeTypes(lang){return(_defaultIncomeTypes[lang]||_defaultIncomeTypes['en']).slice();}
 
+// ── APP STATE & VIEW GLOBALS ─────────────────────────────────────────────────
+// Global scope is intentional for this monolith SPA — all functions need direct
+// access to state and view variables. Namespace wrapping was evaluated and rejected
+// as it adds complexity without benefit in a single-file architecture.
 let state={setup:null,expenses:[],incomes:[],
   categories:defaultCats('en'),
   incomeTypes:defaultIncomeTypes('en'),
   expenseTypes:['STAŁY','ZMIENNY','INWESTYCJA','SZKOŁA','INNY'],
-  templates:[],incTemplates:[],reportShownFor:null,recurringShownFor:null,darkMode:false,budgetLimits:{},goals:[],balanceHistory:[],lastAutoClose:null,lastAutoBackup:null,currency:'£',monthNotes:{},lang:'en'};
+  templates:[],incTemplates:[],reportShownFor:null,recurringShownFor:null,darkMode:false,budgetLimits:{},goals:[],balanceHistory:[],lastAutoClose:null,lastAutoBackup:null,currency:'£',monthNotes:{},lang:'en',budgetCycleDay:0};
 let summaryMonth=new Date(),histMonth=new Date(),cardMonth=new Date(),histTab='all';
 let editingExpId=null,editingIncId=null;
 let _activeExp=[],_activeInc=[];
+const HIST_PAGE_SIZE=50;
+let _histShown=HIST_PAGE_SIZE;
 
 // ── IndexedDB backup storage (resilient fallback if localStorage is cleared) ──
 const IDB_NAME='BudgetTrackerBackup';
@@ -1929,6 +1972,28 @@ function idbGet(db){
 let _idb=null;
 async function getIDB(){if(!_idb)_idb=await idbOpen();return _idb;}
 
+/** Applies default values for any fields missing in older state versions. */
+function migrateState(s){
+  if(!s.balanceHistory)s.balanceHistory=[];
+  if(s.setup&&s.setup.savings===undefined)s.setup.savings=0;
+  if(!s.goals)s.goals=[];
+  if(!s.budgetLimits)s.budgetLimits={};
+  if(!s.expenseTypes||s.expenseTypes.length<2)s.expenseTypes=['STAŁY','ZMIENNY','INWESTYCJA','SZKOŁA','INNY'];
+  if(!s.incTemplates)s.incTemplates=[];
+  if(!s.templates)s.templates=[];
+  if(!Array.isArray(s.categories)||!s.categories.length)s.categories=defaultCats(s.lang||'en');
+  if(!Array.isArray(s.incomeTypes)||!s.incomeTypes.length)s.incomeTypes=defaultIncomeTypes(s.lang||'en');
+  if(s.darkMode===undefined)s.darkMode=false;
+  if(s.reportShownFor===undefined)s.reportShownFor=null;
+  if(s.recurringShownFor===undefined)s.recurringShownFor=null;
+  if(s.lastAutoClose===undefined)s.lastAutoClose=null;
+  if(s.lastAutoBackup===undefined)s.lastAutoBackup=null;
+  if(!s.currency)s.currency='£';
+  if(!s.monthNotes)s.monthNotes={};
+  if(!s.lang)s.lang='en';
+  if(s.budgetCycleDay===undefined)s.budgetCycleDay=0;
+  return s;
+}
 async function load(){
   try{
     // window.storage may be injected by tests (Playwright); production uses localStorage
@@ -1956,35 +2021,22 @@ async function load(){
       const loaded=JSON.parse(raw);
       // merge in any fields added in newer app versions
       state=loaded;
-      if(!state.balanceHistory)state.balanceHistory=[];
-      if(state.setup && state.setup.savings === undefined) state.setup.savings = 0;
-      if(!state.goals)state.goals=[];
-      if(!state.budgetLimits)state.budgetLimits={};
-      if(!state.expenseTypes||state.expenseTypes.length<2)state.expenseTypes=['STAŁY','ZMIENNY','INWESTYCJA','SZKOŁA','INNY'];
-      if(!state.incTemplates)state.incTemplates=[];
-      if(!state.templates)state.templates=[];
-      if(!Array.isArray(state.categories)||!state.categories.length)state.categories=defaultCats(state.lang||'en');
-      if(!Array.isArray(state.incomeTypes)||!state.incomeTypes.length)state.incomeTypes=defaultIncomeTypes(state.lang||'en');
-      if(state.darkMode===undefined)state.darkMode=false;
-      if(state.reportShownFor===undefined)state.reportShownFor=null;
-      if(state.recurringShownFor===undefined)state.recurringShownFor=null;
-      if(state.lastAutoClose===undefined)state.lastAutoClose=null;
-      if(state.lastAutoBackup===undefined)state.lastAutoBackup=null;
-      if(!state.currency)state.currency='£';
-      if(!state.monthNotes)state.monthNotes={};
-      if(!state.lang)state.lang='en';
+      migrateState(state);
     }
-  }catch(e){}
+  }catch(e){console.error('load() error:',e);setTimeout(()=>{try{toast('⚠️ Error loading data — starting fresh');}catch(_){}},500);}
 }
 async function save(){
   try{
     const data=JSON.stringify(state);
     if(window.storage) await window.storage.set('budget-state',data);
     else {
-      localStorage.setItem('budget-state',data);
-      // Dual-write: also save to IndexedDB as crash-resilient backup
-      const db=await getIDB();
-      if(db)idbSet(db,data);
+      let lsOk=false;
+      try{localStorage.setItem('budget-state',data);lsOk=true;}catch(lsErr){
+        console.warn('localStorage save failed (quota?):',lsErr);
+      }
+      // Always write to IndexedDB as crash-resilient backup
+      try{const db=await getIDB();if(db)idbSet(db,data);}catch(idbErr){}
+      if(!lsOk)toast(t('toastSaveFailed'));
     }
   }catch(e){
     console.error('Save failed:',e);
@@ -2026,6 +2078,114 @@ function renderCurrencySelect(){
   if(!sel)return;
   sel.value=state.currency||'£';
 }
+// ── BUDGET CYCLE ──────────────────────────────────────────────────────────────
+function renderBudgetCycleSelect(){
+  const sel=document.getElementById('cycle-select');
+  const row=document.getElementById('payday-row');
+  const inp=document.getElementById('payday-input');
+  if(!sel||!row||!inp)return;
+  const d=state.budgetCycleDay||0;
+  if(d===0){
+    sel.value='0';
+    row.style.display='none';
+  }else{
+    sel.value='-1';
+    row.style.display='';
+    inp.value=d;
+  }
+}
+function changeBudgetCycle(){
+  const sel=document.getElementById('cycle-select');
+  const row=document.getElementById('payday-row');
+  const inp=document.getElementById('payday-input');
+  if(sel.value==='0'){
+    state.budgetCycleDay=0;
+    row.style.display='none';
+  }else{
+    row.style.display='';
+    const v=parseInt(inp.value)||1;
+    state.budgetCycleDay=Math.max(1,Math.min(28,v));
+    inp.value=state.budgetCycleDay;
+  }
+  save();renderAll();
+}
+function changePayday(){
+  const inp=document.getElementById('payday-input');
+  let v=parseInt(inp.value)||1;
+  v=Math.max(1,Math.min(28,v));
+  inp.value=v;
+  state.budgetCycleDay=v;
+  save();renderAll();
+}
+// ── CYCLE HELPERS ─────────────────────────────────────────────────────────────
+/** Returns {start:Date, end:Date, label:string} for the budget cycle containing `date`.
+ *  When budgetCycleDay=0 (calendar): 1st–last day of month.
+ *  When budgetCycleDay=1-28 (payday): d-th to (d-1)-th of next month. */
+function getCycleRange(date){
+  const d=state.budgetCycleDay||0;
+  if(!d||d===0){
+    // Calendar mode: 1st to last day of month
+    const start=new Date(date.getFullYear(),date.getMonth(),1);
+    const end=new Date(date.getFullYear(),date.getMonth()+1,0);
+    return{start,end,label:formatCalendarLabel(date)};
+  }
+  // Payday mode
+  let cycleStart,cycleEnd;
+  if(date.getDate()>=d){
+    cycleStart=new Date(date.getFullYear(),date.getMonth(),d);
+    cycleEnd=new Date(date.getFullYear(),date.getMonth()+1,d-1);
+  }else{
+    cycleStart=new Date(date.getFullYear(),date.getMonth()-1,d);
+    cycleEnd=new Date(date.getFullYear(),date.getMonth(),d-1);
+  }
+  return{start:cycleStart,end:cycleEnd,label:formatCycleLabel(cycleStart,cycleEnd)};
+}
+/** Returns true if dateStr (YYYY-MM-DD) falls within range {start,end} inclusive. */
+function dateInCycle(dateStr,range){
+  const d=new Date(dateStr+'T00:00:00');
+  return d>=range.start&&d<=range.end;
+}
+function formatCalendarLabel(date){
+  return`${months()[date.getMonth()]} ${date.getFullYear()}`;
+}
+function formatCycleLabel(start,end){
+  const ms=monthsShort();
+  return`${start.getDate()} ${ms[start.getMonth()]} – ${end.getDate()} ${ms[end.getMonth()]}${start.getFullYear()!==end.getFullYear()?' '+end.getFullYear():''}`;
+}
+/** Returns unique key for a cycle: 'YYYY-MM' (calendar) or 'YYYY-MM-DD' (payday). */
+function cycleKey(range){
+  // Unique key for a cycle, used for monthNotes, recurringShownFor etc.
+  const d=state.budgetCycleDay||0;
+  if(!d||d===0){
+    // Calendar mode: keep old YYYY-MM format for backward compat
+    return`${range.start.getFullYear()}-${pad(range.start.getMonth()+1)}`;
+  }
+  return`${range.start.getFullYear()}-${pad(range.start.getMonth()+1)}-${pad(range.start.getDate())}`;
+}
+/** Returns expenses in the given cycle range. */
+function cycleExpenses(range){return state.expenses.filter(e=>dateInCycle(e.date,range));}
+/** Returns incomes in the given cycle range. */
+function cycleIncomes(range){return state.incomes.filter(i=>dateInCycle(i.date,range));}
+function changeCycle(d){
+  // Navigate to prev/next cycle
+  const cd=state.budgetCycleDay||0;
+  if(!cd||cd===0){
+    summaryMonth=new Date(summaryMonth.getFullYear(),summaryMonth.getMonth()+d,1);
+  }else{
+    // Move by one month in the direction
+    const cur=getCycleRange(summaryMonth);
+    if(d>0){
+      // Next cycle: go to cycleEnd + 1 day
+      const next=new Date(cur.end);next.setDate(next.getDate()+1);
+      summaryMonth=next;
+    }else{
+      // Prev cycle: go to cycleStart - 1 day
+      const prev=new Date(cur.start);prev.setDate(prev.getDate()-1);
+      summaryMonth=prev;
+    }
+  }
+  renderSummary();
+}
 function updateCurrencyLabels(){
   const s=curSym();
   // data-i18n-cur: translate label + append currency symbol
@@ -2066,14 +2226,6 @@ function translateUI(){
     const val=t(key);
     if(val!==key)el.textContent=val;
   });
-  // data-i18n-html (for innerHTML translations like backupInfo)
-  // ⚠️ SECURITY: uses innerHTML — keys must stay hardcoded in source.
-  // Never allow user-provided or external translations for these keys.
-  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
-    const key=el.getAttribute('data-i18n-html');
-    const val=t(key);
-    if(val!==key)el.innerHTML=val;
-  });
   // data-i18n-ph (placeholders)
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
     const key=el.getAttribute('data-i18n-ph');
@@ -2098,7 +2250,7 @@ function translateUI(){
 function saveSetup(){
   const d=document.getElementById('setup-date').value;
   if(!d){toast(t('toastEnterDate'));return;}
-  state.setup={date:d,bank:parseFloat(document.getElementById('setup-bank').value)||0,card:parseFloat(document.getElementById('setup-card').value)||0,cash:0,savings:parseFloat(document.getElementById('setup-savings').value)||0};
+  state.setup={date:d,bank:Math.max(0,parseFloat(document.getElementById('setup-bank').value)||0),card:Math.max(0,parseFloat(document.getElementById('setup-card').value)||0),cash:0,savings:Math.max(0,parseFloat(document.getElementById('setup-savings').value)||0)};
   save();startApp();
 }
 
@@ -2115,57 +2267,120 @@ function startApp(){
 function checkModals(){
   const now=new Date();
   autoCloseMonthIfNeeded(now);
-  if(now.getDate()!==1)return;
-  const ym=yrMon(now);
-  if(state.reportShownFor!==ym){
-    state.reportShownFor=ym;
-    const pm=now.getMonth()===0?11:now.getMonth()-1,py=now.getMonth()===0?now.getFullYear()-1:now.getFullYear();
-    document.getElementById('report-subtitle').textContent=`${months()[pm]} ${py}`;
-    document.getElementById('report-content').innerHTML=buildSummaryHTML(py,pm);
+  const range=getCycleRange(now);
+  const cd=state.budgetCycleDay||0;
+  const isCycleStart=(!cd||cd===0)?now.getDate()===1:now.getDate()===cd;
+  if(!isCycleStart)return;
+  const ck=cycleKey(range);
+  if(state.reportShownFor!==ck){
+    state.reportShownFor=ck;
+    // Show report for previous cycle
+    const prevDate=new Date(range.start);prevDate.setDate(prevDate.getDate()-1);
+    const prevRange=getCycleRange(prevDate);
+    document.getElementById('report-subtitle').textContent=prevRange.label;
+    // buildSummaryHTML reads from summaryMonth — temporarily set it to prev cycle
+    const origSummary=summaryMonth;
+    summaryMonth=prevDate;
+    document.getElementById('report-content').innerHTML=buildSummaryHTML(prevDate.getFullYear(),prevDate.getMonth());
+    summaryMonth=origSummary;
     document.getElementById('report-modal').classList.add('active');save();focusModal('report-modal');
   }
-  if(state.recurringShownFor!==ym&&(state.templates.length>0||(state.incTemplates||[]).length>0)){
-    state.recurringShownFor=ym;save();
+  if(state.recurringShownFor!==ck&&(state.templates.length>0||(state.incTemplates||[]).length>0)){
+    state.recurringShownFor=ck;save();
     if(!document.getElementById('report-modal').classList.contains('active'))showRecurringModal();
   }
 }
 
+/** Auto-closes all cycles between lastAutoClose and now.
+ *  Uses reverse-apply reconstruction: starts from current balances and reverses
+ *  all transactions after each cycle's end to compute historical snapshots. */
 function autoCloseMonthIfNeeded(now){
   if(!state.setup)return;
-  const currentYM=yrMon(now);
+  const range=getCycleRange(now);
+  const currentCK=cycleKey(range);
   if(!state.lastAutoClose){
-    state.lastAutoClose=currentYM;save();return;
+    state.lastAutoClose=currentCK;save();return;
   }
-  if(state.lastAutoClose===currentYM)return;
-  // Build list of all months between lastAutoClose and currentYM (exclusive)
+  if(state.lastAutoClose===currentCK)return;
+  // Close all cycles between lastAutoClose and current cycle
   if(!state.balanceHistory)state.balanceHistory=[];
-  const [startY,startM]=state.lastAutoClose.split('-').map(Number);
-  const [endY,endM]=currentYM.split('-').map(Number);
-  let y=startY,m=startM;
-  let closedCount=0;
-  while(y<endY||(y===endY&&m<endM)){
-    const ym=`${y}-${String(m).padStart(2,'0')}`;
-    state.balanceHistory=state.balanceHistory.filter(h=>h.ym!==ym);
-    state.balanceHistory.push({ym,bank:state.setup?.bank||0,card:state.setup?.card||0,cash:state.setup?.cash||0,savings:state.setup?.savings||0,closedAt:now.toISOString()});
-    closedCount++;
-    m++;if(m>12){m=1;y++;}
+  const cd=state.budgetCycleDay||0;
+  // Walk from lastAutoClose forward until we reach current cycle
+  // Parse last auto close — it's either YYYY-MM or YYYY-MM-DD
+  const parts=state.lastAutoClose.split('-').map(Number);
+  let walkDate;
+  if(parts.length===3){
+    walkDate=new Date(parts[0],parts[1]-1,parts[2]);
+  }else{
+    walkDate=new Date(parts[0],parts[1]-1,1);
   }
+  // Advance one cycle at a time, snapshot each with reconstructed balances
+  // Strategy: current balances are correct NOW. For each past cycle, compute
+  // what balances were at cycle end by reverse-applying transactions after it.
+  const cyclesToClose=[];
+  for(let safe=0;safe<120;safe++){
+    const wr=getCycleRange(walkDate);
+    const wk=cycleKey(wr);
+    if(wk===currentCK)break;
+    cyclesToClose.push({range:wr,key:wk});
+    const nextDay=new Date(wr.end);nextDay.setDate(nextDay.getDate()+1);
+    walkDate=nextDay;
+  }
+  // For each closed cycle, reconstruct balances at cycle end
+  // Optimization: pre-parse all transaction dates once, then process cycles newest-first
+  // using incremental reversal (avoid re-scanning all transactions per cycle).
+  const parsedExp=state.expenses.map(e=>({...e,_ms:new Date(e.date+'T00:00:00').getTime()}));
+  const parsedInc=state.incomes.map(i=>({...i,_ms:new Date(i.date+'T00:00:00').getTime()}));
+  // Process cycles from newest to oldest — each cycle's snapshot = previous snapshot + reverse transactions in that gap
+  for(let ci=cyclesToClose.length-1;ci>=0;ci--){
+    const c=cyclesToClose[ci];
+    let bank=state.setup?.bank||0,card=state.setup?.card||0,cash=state.setup?.cash||0,savings=state.setup?.savings||0;
+    const endMs=c.range.end.getTime();
+    // Reverse expenses after this cycle's end
+    parsedExp.forEach(e=>{
+      if(e._ms>endMs){
+        if(e.source==='SPŁATA KARTY'||e.type==='SPŁATA KARTY'){bank+=e.amount;card+=e.amount;}
+        else if(e.type==='DO_OSZCZĘDNOŚCI'){bank+=e.amount;savings-=e.amount;}
+        else if(e.type==='Z_OSZCZĘDNOŚCI'){savings+=e.amount;bank-=e.amount;}
+        else if(e.source==='Karta Kredytowa'){card-=e.amount;}
+        else if(e.source==='Oszczędności'){savings+=e.amount;}
+        else if(e.source==='Gotówka'){cash+=e.amount;}
+        else{bank+=e.amount;}
+      }
+    });
+    // Reverse incomes after this cycle's end
+    parsedInc.forEach(i=>{
+      if(i._ms>endMs){
+        if(i.dest==='Karta Kredytowa')card+=i.amount;
+        else if(i.dest==='Gotówka')cash-=i.amount;
+        else if(i.dest==='Oszczędności')savings-=i.amount;
+        else bank-=i.amount;
+      }
+    });
+    state.balanceHistory=state.balanceHistory.filter(h=>h.ym!==c.key);
+    state.balanceHistory.push({ym:c.key,bank:round2(bank),card:round2(card),cash:round2(cash),savings:round2(savings),closedAt:now.toISOString()});
+  }
+  const closedCount=cyclesToClose.length;
   if(state.balanceHistory.length>24)state.balanceHistory=state.balanceHistory.slice(-24);
-  state.lastAutoClose=currentYM;
+  state.lastAutoClose=currentCK;
   save();
-  const prevM=m===1?12:m-1,prevY=m===1?y-1:y;
-  const closedYM=`${prevY}-${String(prevM).padStart(2,'0')}`;
   if(closedCount===1){
-    toast(`✅ ${months()[prevM-1]} ${prevY} — ${t('closeMonthAuto')}`);
-  } else {
+    const prevDate=new Date(range.start);prevDate.setDate(prevDate.getDate()-1);
+    const prevRange=getCycleRange(prevDate);
+    toast(`✅ ${prevRange.label} — ${t('closeMonthAuto')}`);
+    autoBackupMonth(cycleKey(prevRange));
+  } else if(closedCount>1){
     toast(`✅ ${closedCount} ${t('closeMonthAutoMulti')}`);
+    const prevDate=new Date(range.start);prevDate.setDate(prevDate.getDate()-1);
+    autoBackupMonth(cycleKey(getCycleRange(prevDate)));
   }
-  autoBackupMonth(closedYM);
 }
 function closeReport(){
   document.getElementById('report-modal').classList.remove('active');
-  const now=new Date(),ym=yrMon(now);
-  if(now.getDate()===1&&state.recurringShownFor===ym&&(state.templates.length>0||(state.incTemplates||[]).length>0))showRecurringModal();
+  const now=new Date(),range=getCycleRange(now),ck=cycleKey(range);
+  const cd=state.budgetCycleDay||0;
+  const isCycleStart=(!cd||cd===0)?now.getDate()===1:now.getDate()===cd;
+  if(isCycleStart&&state.recurringShownFor===ck&&(state.templates.length>0||(state.incTemplates||[]).length>0))showRecurringModal();
 }
 
 // ── RECURRING ────────────────────────────────────────────────────────────────
@@ -2262,7 +2477,7 @@ function addTemplate(){
   const name=document.getElementById('tpl-name').value.trim();
   const amt=parseFloat(document.getElementById('tpl-amount').value);
   const day=parseInt(document.getElementById('tpl-day').value);
-  if(!name){toast(t('toastEnterName'));return;}if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}if(!day||day<1||day>31){toast(t('toastEnterDay'));return;}
+  if(!name){toast(t('toastEnterName'));return;}if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}if(!day||day<1||day>31){toast(t('toastEnterDay'));return;}
   const endDate=document.getElementById('tpl-end').value||'';
   state.templates.push({id:genId(),name,amount:round2(amt),day,source:document.getElementById('tpl-source').value,category:document.getElementById('tpl-cat').value,endDate});
   save();renderAll();document.getElementById('tpl-name').value='';document.getElementById('tpl-amount').value='';document.getElementById('tpl-day').value='';document.getElementById('tpl-end').value='';toast(t('tplAdded'));
@@ -2274,7 +2489,7 @@ function addIncTemplate(){
   const amt=parseFloat(document.getElementById('itpl-amount').value);
   const day=parseInt(document.getElementById('itpl-day').value);
   if(!name){toast(t('toastEnterName'));return;}
-  if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}
+  if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}
   if(!day||day<1||day>31){toast(t('toastEnterDay'));return;}
   if(!state.incTemplates)state.incTemplates=[];
   const endDate=document.getElementById('itpl-end').value||'';
@@ -2314,7 +2529,7 @@ function saveEditTemplate(){
   const amt=parseFloat(document.getElementById('edit-tpl-amount').value);
   const day=parseInt(document.getElementById('edit-tpl-day').value);
   if(!name){toast(t('toastEnterName'));return;}
-  if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}
+  if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}
   if(!day||day<1||day>31){toast(t('toastEnterDay'));return;}
   tpl.name=name;tpl.amount=round2(amt);tpl.day=day;
   tpl.source=document.getElementById('edit-tpl-source').value;
@@ -2346,7 +2561,7 @@ function saveEditIncTemplate(){
   const amt=parseFloat(document.getElementById('edit-itpl-amount').value);
   const day=parseInt(document.getElementById('edit-itpl-day').value);
   if(!name){toast(t('toastEnterName'));return;}
-  if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}
+  if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}
   if(!day||day<1||day>31){toast(t('toastEnterDay'));return;}
   tpl.name=name;tpl.amount=round2(amt);tpl.day=day;
   tpl.dest=document.getElementById('edit-itpl-dest').value;
@@ -2357,16 +2572,18 @@ function saveEditIncTemplate(){
 function closeEditIncTemplate(){document.getElementById('edit-itpl-modal').classList.remove('active');editingItplId=null;restoreFocus();}
 
 // ── BALANCE HELPERS ──────────────────────────────────────────────────────────
+/** Mutates state.setup balances based on expense source/type. All amounts round2'd. */
 function applyExpenseToBalance(exp){
   if(!state.setup)return;
-  if(exp.source==='Karta Kredytowa')state.setup.card=round2(state.setup.card+exp.amount);
-  else if(exp.source==='SPŁATA KARTY'||exp.type==='SPŁATA KARTY'){state.setup.bank=round2(state.setup.bank-exp.amount);state.setup.card=round2(state.setup.card-exp.amount);}
+  if(exp.source==='Karta Kredytowa')state.setup.card=round2(state.setup.card+exp.amount); // card stores DEBT: expense increases debt
+  else if(exp.source==='SPŁATA KARTY'||exp.type==='SPŁATA KARTY'){state.setup.bank=round2(state.setup.bank-exp.amount);state.setup.card=round2(state.setup.card-exp.amount);} // repayment: bank↓, debt↓
   else if(exp.source==='DO_OSZCZĘDNOŚCI'||exp.type==='DO_OSZCZĘDNOŚCI'){state.setup.bank=round2(state.setup.bank-exp.amount);state.setup.savings=round2((state.setup.savings||0)+exp.amount);}
   else if(exp.source==='Z_OSZCZĘDNOŚCI'||exp.type==='Z_OSZCZĘDNOŚCI'){state.setup.savings=round2((state.setup.savings||0)-exp.amount);state.setup.bank=round2(state.setup.bank+exp.amount);}
   else if(exp.source==='Oszczędności')state.setup.savings=round2((state.setup.savings||0)-exp.amount);
   else if(exp.source==='Konto')state.setup.bank=round2(state.setup.bank-exp.amount);
   else if(exp.source==='Gotówka')state.setup.cash=round2((state.setup.cash||0)-exp.amount);
 }
+/** Reverses the balance effect of an expense (symmetric to applyExpenseToBalance). */
 function reverseExpenseFromBalance(exp){
   if(!state.setup)return;
   if(exp.source==='Karta Kredytowa')state.setup.card=round2(state.setup.card-exp.amount);
@@ -2405,10 +2622,12 @@ function onSourceChange(){
 }
 let _lastSaveTs=0;
 function _debounceGuard(){const now=Date.now();if(now-_lastSaveTs<500)return true;_lastSaveTs=now;return false;}
+const MAX_AMOUNT=99999999.99;
+function validAmount(amt){return amt&&amt>0&&amt<=MAX_AMOUNT;}
 function saveExpense(){
   if(_debounceGuard())return;
   const amt=parseFloat(document.getElementById('exp-amount').value);
-  if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}
+  if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}
   const d=document.getElementById('exp-date').value;
   if(!isDateValid(d)){toast(t('toastEnterDate'));return;}
   const src=document.getElementById('exp-source').value,isRepay=src==='SPŁATA KARTY',isTransfer=isRepay||src==='DO_OSZCZĘDNOŚCI'||src==='Z_OSZCZĘDNOŚCI';
@@ -2422,7 +2641,7 @@ function saveExpense(){
 function saveIncome(){
   if(_debounceGuard())return;
   const amt=parseFloat(document.getElementById('inc-amount').value);
-  if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}
+  if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}
   const d=document.getElementById('inc-date').value;
   if(!isDateValid(d)){toast(t('toastEnterDate'));return;}
   const inc={id:genId(),amount:round2(amt),date:d,dest:document.getElementById('inc-dest').value,kind:document.getElementById('inc-type').value,note:document.getElementById('inc-note').value};
@@ -2492,7 +2711,7 @@ function openEditExp(id){
 function saveEditExp(){
   const exp=state.expenses.find(e=>e.id===editingExpId);if(!exp)return;
   const amt=parseFloat(document.getElementById('edit-exp-amount').value);
-  if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}
+  if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}
   const d=document.getElementById('edit-exp-date').value;if(!isDateValid(d)){toast(t('toastEnterDate'));return;}
   reverseExpenseFromBalance(exp);
   exp.amount=round2(amt);exp.date=d;exp.source=document.getElementById('edit-exp-source').value;
@@ -2525,7 +2744,7 @@ function openEditInc(id){
 function saveEditInc(){
   const inc=state.incomes.find(i=>i.id===editingIncId);if(!inc)return;
   const amt=parseFloat(document.getElementById('edit-inc-amount').value);
-  if(!amt||amt<=0){toast(t('toastEnterAmount'));return;}
+  if(!validAmount(amt)){toast(t('toastEnterAmount'));return;}
   const d=document.getElementById('edit-inc-date').value;if(!isDateValid(d)){toast(t('toastEnterDate'));return;}
   reverseIncomeFromBalance(inc);
   inc.amount=round2(amt);inc.date=d;inc.dest=document.getElementById('edit-inc-dest').value;inc.kind=document.getElementById('edit-inc-kind').value;inc.note=document.getElementById('edit-inc-note').value;
@@ -2563,12 +2782,12 @@ function deleteExpenseType(tp){
 }
 
 // ── CARD ─────────────────────────────────────────────────────────────────────
-function changeCardMonth(d){cardMonth=new Date(cardMonth.getFullYear(),cardMonth.getMonth()+d,1);renderCard();}
+function changeCardMonth(d){const cd=state.budgetCycleDay||0;if(!cd||cd===0){cardMonth=new Date(cardMonth.getFullYear(),cardMonth.getMonth()+d,1);}else{const r=getCycleRange(cardMonth);if(d>0){const n=new Date(r.end);n.setDate(n.getDate()+1);cardMonth=n;}else{const p=new Date(r.start);p.setDate(p.getDate()-1);cardMonth=p;}}renderCard();}
 function renderCard(){
-  const yr=cardMonth.getFullYear(),mo=cardMonth.getMonth();
-  document.getElementById('card-month-label').textContent=`${months()[mo]} ${yr}`;
-  const cardExps=state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===yr&&d.getMonth()===mo&&e.source==='Karta Kredytowa';});
-  const repayments=state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===yr&&d.getMonth()===mo&&(e.source==='SPŁATA KARTY'||e.type==='SPŁATA KARTY');});
+  const range=getCycleRange(cardMonth);
+  document.getElementById('card-month-label').textContent=range.label;
+  const cardExps=state.expenses.filter(e=>dateInCycle(e.date,range)&&e.source==='Karta Kredytowa');
+  const repayments=state.expenses.filter(e=>dateInCycle(e.date,range)&&(e.source==='SPŁATA KARTY'||e.type==='SPŁATA KARTY'));
   const totalCharged=cardExps.reduce((s,e)=>s+e.amount,0);
   const totalRepaid=repayments.reduce((s,e)=>s+e.amount,0);
   const netChange=round2(totalCharged-totalRepaid);
@@ -2587,8 +2806,9 @@ function renderCard(){
 }
 
 // ── HISTORY ──────────────────────────────────────────────────────────────────
-function changeHistMonth(d){histMonth=new Date(histMonth.getFullYear(),histMonth.getMonth()+d,1);renderHistory();}
+function changeHistMonth(d){histResetPage();const cd=state.budgetCycleDay||0;if(!cd||cd===0){histMonth=new Date(histMonth.getFullYear(),histMonth.getMonth()+d,1);}else{const r=getCycleRange(histMonth);if(d>0){const n=new Date(r.end);n.setDate(n.getDate()+1);histMonth=n;}else{const p=new Date(r.start);p.setDate(p.getDate()-1);histMonth=p;}}renderHistory();}
 function setTab(t){
+  histResetPage();
   histTab=t;
   ['all','exp','inc'].forEach(x=>{
     const el=document.getElementById(`tab-${x}`);
@@ -2707,49 +2927,61 @@ function renderHistory(){
   const q=document.getElementById('hist-search')?.value.trim()||'';
   const isSearch=q.length>0;
   const hasFilters=countActiveFilters()>0;
-  const yr=histMonth.getFullYear(),mo=histMonth.getMonth();
-  if(!isSearch)document.getElementById('hist-month-label').textContent=`${months()[mo]} ${yr}`;
-  let exps=isSearch?state.expenses:state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
-  let incs=isSearch?state.incomes:state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
+  const range=getCycleRange(histMonth);
+  if(!isSearch)document.getElementById('hist-month-label').textContent=range.label;
+  let exps=isSearch?state.expenses:state.expenses.filter(e=>dateInCycle(e.date,range));
+  let incs=isSearch?state.incomes:state.incomes.filter(i=>dateInCycle(i.date,range));
   let items=[];
   if(histTab!=='inc')exps.forEach(e=>items.push({...e,_kind:'exp'}));
   if(histTab!=='exp')incs.forEach(i=>items.push({...i,_kind:'inc'}));
   if(isSearch)items=items.filter(item=>matchesSearch(item,q));
   if(hasFilters)items=items.filter(item=>matchesFilters(item));
-  items.sort((a,b)=>b.date.localeCompare(a.date)||(b.id>a.id?1:b.id<a.id?-1:0));
+  items.sort((a,b)=>b.date.localeCompare(a.date)||(b.id>a.id?1:b.id<a.id?-1:0)); // O(n log n) on cycle-filtered subset, acceptable with HIST_PAGE_SIZE=50
   const emptyMsg=isSearch||hasFilters?`${t('histSearchEmpty')}${q?' "'+htmlEscape(q)+'"':''}${hasFilters?' '+t('filterActive'):''}`:t('histEmpty');
   if(!items.length){document.getElementById('hist-content').innerHTML=`<div class="hist-empty">${emptyMsg}</div>`;return;}
-  const countInfo=isSearch||hasFilters?`<div style="font-size:12px;color:var(--text3);margin-bottom:10px">${t('histFound')} ${items.length} ${t('histTransactions')}</div>`:'';
-  document.getElementById('hist-content').innerHTML=countInfo+items.map(item=>{
+  const totalItems=items.length;
+  const pageItems=items.slice(0,_histShown);
+  const countInfo=isSearch||hasFilters?`<div style="font-size:12px;color:var(--text3);margin-bottom:10px">${t('histFound')} ${totalItems} ${t('histTransactions')}</div>`:'';
+  let html=countInfo+pageItems.map(item=>{
     const showMonth=isSearch?`<span style="font-size:11px;background:var(--tag-bg);border-radius:8px;padding:1px 6px;margin-left:4px;color:var(--text3)">${months()[new Date(item.date).getMonth()]} ${new Date(item.date).getFullYear()}</span>`:'';
     if(item._kind==='exp'){
       const badge=getTypeBadge(item.type);
       const sub=[item.source,item.category!=='—'?item.category:''].filter(Boolean).join(' · ');
       const name=item.category!=='—'?item.category:item.type==='SPŁATA KARTY'?t('cardRepay'):item.type==='DO_OSZCZĘDNOŚCI'?t('expTransferToSavings'):item.type==='Z_OSZCZĘDNOŚCI'?t('expTransferFromSavings'):item.source;
-      return`<div class="hist-item"><div class="hist-item-top"><div class="hist-left"><div class="hist-name">${htmlEscape(name)}${showMonth}</div><div class="hist-meta">${item.date} · ${htmlEscape(sub)}</div>${item.note?`<div class="hist-note">${htmlEscape(item.note)}</div>`:''}</div><div class="hist-right"><div class="hist-amount red">−${cur(item.amount)}</div>${badge}</div></div><div class="hist-actions"><button class="hist-btn hist-btn-edit" onclick="openEditExp('${htmlEscape(item.id)}')" >${t('histEdit')}</button><button class="hist-btn hist-btn-del" onclick="deleteExpense('${htmlEscape(item.id)}')">${t('histDel')}</button></div></div>`;
+      return`<div class="hist-item"><div class="hist-item-top"><div class="hist-left"><div class="hist-name">${htmlEscape(name)}${showMonth}</div><div class="hist-meta">${item.date} · ${htmlEscape(sub)}</div>${item.note?`<div class="hist-note">${htmlEscape(item.note)}</div>`:''}</div><div class="hist-right"><div class="hist-amount red">−${cur(item.amount)}</div>${badge}</div></div><div class="hist-actions"><button class="hist-btn hist-btn-edit" onclick="openEditExp('${htmlEscape(item.id)}')" aria-label="${t('histEdit')} ${htmlEscape(name)}">${t('histEdit')}</button><button class="hist-btn hist-btn-del" onclick="deleteExpense('${htmlEscape(item.id)}')" aria-label="${t('histDel')} ${htmlEscape(name)}">${t('histDel')}</button></div></div>`;
     }else{
-      return`<div class="hist-item"><div class="hist-item-top"><div class="hist-left"><div class="hist-name">${htmlEscape(item.kind)}${showMonth}</div><div class="hist-meta">${item.date} · ${htmlEscape(item.dest)}</div>${item.note?`<div class="hist-note">${htmlEscape(item.note)}</div>`:''}</div><div class="hist-right"><div class="hist-amount green">+${cur(item.amount)}</div><span class="hist-type-badge badge-income">${t('income').toUpperCase()}</span></div></div><div class="hist-actions"><button class="hist-btn hist-btn-edit" onclick="openEditInc('${htmlEscape(item.id)}')" >${t('histEdit')}</button><button class="hist-btn hist-btn-del" onclick="deleteIncome('${htmlEscape(item.id)}')">${t('histDel')}</button></div></div>`;
+      return`<div class="hist-item"><div class="hist-item-top"><div class="hist-left"><div class="hist-name">${htmlEscape(item.kind)}${showMonth}</div><div class="hist-meta">${item.date} · ${htmlEscape(item.dest)}</div>${item.note?`<div class="hist-note">${htmlEscape(item.note)}</div>`:''}</div><div class="hist-right"><div class="hist-amount green">+${cur(item.amount)}</div><span class="hist-type-badge badge-income">${t('income').toUpperCase()}</span></div></div><div class="hist-actions"><button class="hist-btn hist-btn-edit" onclick="openEditInc('${htmlEscape(item.id)}')" aria-label="${t('histEdit')} ${htmlEscape(item.kind)}">${t('histEdit')}</button><button class="hist-btn hist-btn-del" onclick="deleteIncome('${htmlEscape(item.id)}')" aria-label="${t('histDel')} ${htmlEscape(item.kind)}">${t('histDel')}</button></div></div>`;
     }
   }).join('');
+  if(totalItems>_histShown){
+    html+=`<div style="text-align:center;padding:12px"><button class="btn btn-outline btn-small" onclick="histShowMore()">${t('histShowMore')||'Show more'} (${totalItems-_histShown})</button></div>`;
+  }
+  document.getElementById('hist-content').innerHTML=html;
 }
+function histShowMore(){_histShown+=HIST_PAGE_SIZE;renderHistory();}
+function histResetPage(){_histShown=HIST_PAGE_SIZE;}
 
 // ── EXPORT ───────────────────────────────────────────────────────────────────
+// Note: XLSX export would require external library (e.g. SheetJS), violating zero-dependency policy.
+// CSV with UTF-8 BOM (\uFEFF) opens correctly in Excel with proper encoding.
 function exportCSV(){
-  const yr=histMonth.getFullYear(),mo=histMonth.getMonth(),label=`${months()[mo]}_${yr}`;
-  const exps=state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
-  const incs=state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
+  const range=getCycleRange(histMonth);
+  const label=range.label.replace(/\s/g,'_');
+  const exps=state.expenses.filter(e=>dateInCycle(e.date,range));
+  const incs=state.incomes.filter(i=>dateInCycle(i.date,range));
   if(!exps.length&&!incs.length){toast(t('noDataExport'));return;}
   const rows=[[t('expDate'),t('incType'),t('csvTypeCategory'),t('csvFromTo'),`${t('expAmount')} (${curSym()})`,t('csvNote')]];
   exps.sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>rows.push([e.date,t('csvExpense'),isCardRepayType(e.type)?t('cardRepay'):isSavingsTransferType(e.type)?t('savingsTransfers'):`${e.type} / ${e.category}`,e.source,`-${e.amount.toFixed(2)}`,e.note||'']));
   incs.sort((a,b)=>a.date.localeCompare(b.date)).forEach(i=>rows.push([i.date,t('csvIncome'),i.kind,i.dest,`+${i.amount.toFixed(2)}`,i.note||'']));
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   downloadFile(`budget_${label}.csv`,'\uFEFF'+csv,'text/csv;charset=utf-8');
-  toast(`${t('csvDownloaded')}: ${months()[mo]} ${yr} ✓`);
+  toast(`${t('csvDownloaded')}: ${range.label} ✓`);
 }
 function exportTXT(){
-  const yr=histMonth.getFullYear(),mo=histMonth.getMonth(),label=`${months()[mo]} ${yr}`;
-  const exps=state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
-  const incs=state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
+  const range=getCycleRange(histMonth);
+  const label=range.label;
+  const exps=state.expenses.filter(e=>dateInCycle(e.date,range));
+  const incs=state.incomes.filter(i=>dateInCycle(i.date,range));
   if(!exps.length&&!incs.length){toast(t('noDataExport'));return;}
   const totalInc=incs.reduce((s,i)=>s+i.amount,0);
   const regExps=exps.filter(e=>!isTransferType(e.type)),repayments=exps.filter(e=>isCardRepayType(e.type)),savingsXfers=exps.filter(e=>isSavingsTransferType(e.type));
@@ -2777,18 +3009,19 @@ function exportTXT(){
     else txt+=`${tr.date}  -${curSym()}${tr.amount.toFixed(2).padStart(8)}  ${typeLabel(tr.type).padEnd(8)}  ${tr.category!=='—'?tr.category:tr.source}${tr.note?' | '+tr.note:''}\n`;
   });
   txt+=`\n${sep('=')}\n${t('reportAccountState')}  ${cur(state.setup?.bank||0)}\n${t('reportCardDebt')}  ${cur(state.setup?.card||0)}\n${t('reportCash')}     ${cur(state.setup?.cash||0)}\n${t('reportSavings')}  ${cur(state.setup?.savings||0)}\n`;
-  const ym=`${yr}-${pad(mo+1)}`;
+  const ym=cycleKey(range);
   const monthNote=(state.monthNotes||{})[ym];
   if(monthNote)txt+=`\n${t('reportNote')}\n${sep()}\n${monthNote}\n`;
-  downloadFile(`raport_${months()[mo]}_${yr}.txt`,txt,'text/plain;charset=utf-8');toast(t('reportDownloaded'));
+  downloadFile(`raport_${label.replace(/\s/g,'_')}.txt`,txt,'text/plain;charset=utf-8');toast(t('reportDownloaded'));
 }
 function downloadFile(filename,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;const iOS=/iPhone|iPad|iPod/.test(navigator.userAgent);if(iOS){window.open(url,'_blank');toast(`${t('downloadiOS')||'Long-press to save file'}`)}else{document.body.appendChild(a);a.click();document.body.removeChild(a);}setTimeout(()=>URL.revokeObjectURL(url),5000);}
 
 // ── EXPORT PDF (native, zero dependencies) ──────────────────────────────────
 function exportPDF(){
-  const yr=histMonth.getFullYear(),mo=histMonth.getMonth(),label=`${months()[mo]} ${yr}`;
-  const exps=state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
-  const incs=state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===yr&&d.getMonth()===mo;});
+  const range=getCycleRange(histMonth);
+  const label=range.label;
+  const exps=state.expenses.filter(e=>dateInCycle(e.date,range));
+  const incs=state.incomes.filter(i=>dateInCycle(i.date,range));
   if(!exps.length&&!incs.length){toast(t('noDataExport'));return;}
 
   const s=curSym();
@@ -2840,7 +3073,7 @@ function exportPDF(){
     else L(`${tr.date}  -${s}${tr.amount.toFixed(2)}  ${typeLabel(tr.type)}  ${tr.category!=='—'?tr.category:tr.source}${tr.note?' | '+tr.note:''}`);
   });
 
-  const ymPdf=`${yr}-${pad(mo+1)}`;
+  const ymPdf=cycleKey(range);
   const monthNotePdf=(state.monthNotes||{})[ymPdf];
   if(monthNotePdf){S();H(t('reportNote'));L(monthNotePdf);}
 
@@ -2849,21 +3082,26 @@ function exportPDF(){
 
   // Generate PDF binary
   const pdf=buildPDF(lines);
-  downloadFile(`raport_${months()[mo]}_${yr}.pdf`,pdf,'application/pdf');
+  downloadFile(`raport_${label.replace(/\s/g,'_')}.pdf`,pdf,'application/pdf');
   toast(t('pdfDownloaded'));
 }
 
 // Minimal PDF generator — Helvetica, multi-page, UTF-8 safe via WinAnsiEncoding
 function buildPDF(lines){
-  // WinAnsi encoding map for Polish/currency chars
+  // WinAnsi encoding map for Polish/currency chars + Cyrillic transliteration
+  const _cyrillic={'А':'A','Б':'B','В':'V','Г':'G','Д':'D','Е':'E','Ё':'E','Ж':'Zh','З':'Z','И':'I','Й':'Y','К':'K','Л':'L','М':'M','Н':'N','О':'O','П':'P','Р':'R','С':'S','Т':'T','У':'U','Ф':'F','Х':'Kh','Ц':'Ts','Ч':'Ch','Ш':'Sh','Щ':'Shch','Ъ':'','Ы':'Y','Ь':'','Э':'E','Ю':'Yu','Я':'Ya',
+    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'shch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya',
+    'І':'I','і':'i','Ї':'Yi','ї':'yi','Є':'Ye','є':'ye','Ґ':'G','ґ':'g'};
   const winAnsi=(str)=>{
+    // Pre-pass: transliterate Cyrillic to Latin
+    let s='';for(let i=0;i<str.length;i++){s+=_cyrillic[str[i]]||str[i];}
     const map={'ą':0xB9,'ć':0xE6,'ę':0xEA,'ł':0xB3,'ń':0xF1,'ó':0xF3,'ś':0x9C,'ź':0x9F,'ż':0xBF,
       'Ą':0xA5,'Ć':0xC6,'Ę':0xCA,'Ł':0xA3,'Ń':0xD1,'Ó':0xD3,'Ś':0x8C,'Ź':0x8F,'Ż':0xAF,
       '€':0x80,'£':0xA3,'¥':0xA5,'—':0x97,'–':0x96,'…':0x85,'→':0x2D,'−':0x2D,
       'ź':0x9F,'Ź':0x8F};
     let out='';
-    for(let i=0;i<str.length;i++){
-      const c=str[i],code=str.charCodeAt(i);
+    for(let i=0;i<s.length;i++){
+      const c=s[i],code=s.charCodeAt(i);
       if(map[c])out+=String.fromCharCode(map[c]);
       else if(code<256)out+=c;
       else out+='?';
@@ -2969,10 +3207,11 @@ function buildPDF(lines){
 }
 
 // ── SUMMARY ──────────────────────────────────────────────────────────────────
-function changeMonth(d){summaryMonth=new Date(summaryMonth.getFullYear(),summaryMonth.getMonth()+d,1);renderSummary();}
+function changeMonth(d){changeCycle(d);}
 function buildSummaryHTML(year,monthIdx){
-  const exps=state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===year&&d.getMonth()===monthIdx;});
-  const incs=state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===year&&d.getMonth()===monthIdx;});
+  const range=getCycleRange(summaryMonth);
+  const exps=state.expenses.filter(e=>dateInCycle(e.date,range));
+  const incs=state.incomes.filter(i=>dateInCycle(i.date,range));
   const totalInc=incs.reduce((s,i)=>s+i.amount,0);
   const regExps=exps.filter(e=>!isTransferType(e.type)),cardRepayments=exps.filter(e=>isCardRepayType(e.type)),savingsTransfers=exps.filter(e=>isSavingsTransferType(e.type));
   const byType={};
@@ -2994,10 +3233,11 @@ function buildSummaryHTML(year,monthIdx){
     if(remainingMonths>0)forecastBalance=round2((state.setup?.bank||0)-avgMonthlyThisYear*remainingMonths);
   }
 
-  // trend vs previous month
-  const prevMo=monthIdx===0?11:monthIdx-1, prevYr=monthIdx===0?year-1:year;
-  const prevExps=state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===prevYr&&d.getMonth()===prevMo;});
-  const prevIncs=state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===prevYr&&d.getMonth()===prevMo;});
+  // trend vs previous cycle
+  const prevDate=new Date(range.start);prevDate.setDate(prevDate.getDate()-1);
+  const prevRange=getCycleRange(prevDate);
+  const prevExps=state.expenses.filter(e=>dateInCycle(e.date,prevRange));
+  const prevIncs=state.incomes.filter(i=>dateInCycle(i.date,prevRange));
   const prevTotalInc=prevIncs.reduce((s,i)=>s+i.amount,0);
   const prevRegExps=prevExps.filter(e=>!isTransferType(e.type));
   const prevTotalExp=prevRegExps.reduce((s,e)=>s+e.amount,0);
@@ -3042,10 +3282,11 @@ function buildSummaryHTML(year,monthIdx){
 }
 function renderSummary(){
   const y=summaryMonth.getFullYear(),m=summaryMonth.getMonth();
-  document.getElementById('summary-month-label').textContent=`${months()[m]} ${y}`;
+  const range=getCycleRange(summaryMonth);
+  document.getElementById('summary-month-label').textContent=range.label;
   document.getElementById('summary-content').innerHTML=buildSummaryHTML(y,m);
   // Load month note
-  const ym=`${y}-${pad(m+1)}`;
+  const ym=cycleKey(range);
   const noteEl=document.getElementById('month-note');
   if(noteEl){noteEl.value=(state.monthNotes||{})[ym]||'';noteEl.dataset.ym=ym;}
 }
@@ -3099,13 +3340,13 @@ function renderSelects(){
   if(!state.expenseTypes||state.expenseTypes.length<2)state.expenseTypes=['STAŁY','ZMIENNY','INWESTYCJA','SZKOŁA','INNY'];
   ['exp-type','edit-exp-type'].forEach(id=>{
     const sel=document.getElementById(id);if(!sel)return;
-    const cur=sel.value;
-    sel.innerHTML=buildOptions(state.expenseTypes.filter(t=>t!=='SPŁATA KARTY'),cur);
-    if(state.expenseTypes.includes(cur))sel.value=cur;
+    const curTypeVal=sel.value;
+    sel.innerHTML=buildOptions(state.expenseTypes.filter(t=>t!=='SPŁATA KARTY'),curTypeVal);
+    if(state.expenseTypes.includes(curTypeVal))sel.value=curTypeVal;
   });
-  const catSel=document.getElementById('exp-cat');const cur=catSel.value;
-  catSel.innerHTML=buildOptions(state.categories,cur);
-  if(state.categories.includes(cur))catSel.value=cur;
+  const catSel=document.getElementById('exp-cat');const curCatVal=catSel.value;
+  catSel.innerHTML=buildOptions(state.categories,curCatVal);
+  if(state.categories.includes(curCatVal))catSel.value=curCatVal;
   const tplCat=document.getElementById('tpl-cat');const curT=tplCat.value;
   tplCat.innerHTML=buildOptions(state.categories,curT);
   if(state.categories.includes(curT))tplCat.value=curT;
@@ -3119,15 +3360,15 @@ function renderSelects(){
 function renderTemplateList(templates,metaFn,editFn,deleteFn){
   if(!templates.length)return`<div style="font-size:13px;color:var(--text4);text-align:center;padding:10px 0">${t2('tplEmpty')}</div>`;
   const _now=new Date(),_ym=`${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,"0")}`;
-  return templates.map(t=>{const _expired=t.endDate&&t.endDate<_ym,_endInfo=t.endDate?(_expired?` · <span class="tpl-expired">⏱️ ${t2('tplExpired')}</span>`:` · → ${t.endDate}`):" · ♾️";return`<div class="tpl-item${_expired?" tpl-item-expired":""}"><div class="tpl-item-info"><div class="tpl-item-name">${htmlEscape(t.name)}</div><div class="tpl-item-meta">${cur(t.amount)} · ${t.day}. ${t2('tplDayShort')} · ${metaFn(t)}${_endInfo}</div></div><div class="tpl-actions"><button class="tpl-edit" onclick="${editFn}('${htmlEscape(t.id)}')" title="${t2('btnEdit')}">✏️</button><button class="tpl-del" onclick="${deleteFn}('${htmlEscape(t.id)}')" title="${t2('btnDelete')}">×</button></div></div>`}).join('');
+  return templates.map(t=>{const _expired=t.endDate&&t.endDate<_ym,_endInfo=t.endDate?(_expired?` · <span class="tpl-expired">⏱️ ${t2('tplExpired')}</span>`:` · → ${t.endDate}`):" · ♾️";return`<div class="tpl-item${_expired?" tpl-item-expired":""}"><div class="tpl-item-info"><div class="tpl-item-name">${htmlEscape(t.name)}</div><div class="tpl-item-meta">${cur(t.amount)} · ${t.day}. ${t2('tplDayShort')} · ${metaFn(t)}${_endInfo}</div></div><div class="tpl-actions"><button class="tpl-edit" onclick="${editFn}('${htmlEscape(t.id)}')" title="${t2('btnEdit')}" aria-label="${t2('btnEdit')} ${htmlEscape(t.name)}">✏️</button><button class="tpl-del" onclick="${deleteFn}('${htmlEscape(t.id)}')" title="${t2('btnDelete')}" aria-label="${t2('btnDelete')} ${htmlEscape(t.name)}">×</button></div></div>`}).join('');
 }
 function renderSettings(){
-  document.getElementById('cat-list').innerHTML=state.categories.map(c=>`<div class="tag">${htmlEscape(c)}<span class="del" data-cat="${htmlEscape(c)}" onclick="deleteCategory(this.dataset.cat)">×</span></div>`).join('');
-  document.getElementById('inc-type-list').innerHTML=state.incomeTypes.map(t=>`<div class="tag">${htmlEscape(t)}<span class="del" data-itype="${htmlEscape(t)}" onclick="deleteIncomeType(this.dataset.itype)">×</span></div>`).join('');
+  document.getElementById('cat-list').innerHTML=state.categories.map(c=>`<div class="tag">${htmlEscape(c)}<span class="del" role="button" aria-label="${t2('btnDelete')} ${htmlEscape(c)}" data-cat="${htmlEscape(c)}" onclick="deleteCategory(this.dataset.cat)">×</span></div>`).join('');
+  document.getElementById('inc-type-list').innerHTML=state.incomeTypes.map(t=>`<div class="tag">${htmlEscape(t)}<span class="del" role="button" aria-label="${t2('btnDelete')} ${htmlEscape(t)}" data-itype="${htmlEscape(t)}" onclick="deleteIncomeType(this.dataset.itype)">×</span></div>`).join('');
   const PROTECTED=['STAŁY','ZMIENNY'];
   document.getElementById('exp-type-list').innerHTML=state.expenseTypes.filter(t=>t!=='SPŁATA KARTY').map(t=>{
     const isProtected=PROTECTED.includes(t);
-    return`<div class="tag">${htmlEscape(t)}${isProtected?'<span style="color:var(--text4);font-size:11px;margin-left:2px">🔒</span>':`<span class="del" data-etype="${htmlEscape(t)}" onclick="deleteExpenseType(this.dataset.etype)">×</span>`}</div>`;
+    return`<div class="tag">${htmlEscape(t)}${isProtected?'<span style="color:var(--text4);font-size:11px;margin-left:2px">🔒</span>':`<span class="del" role="button" aria-label="${t2('btnDelete')} ${htmlEscape(t)}" data-etype="${htmlEscape(t)}" onclick="deleteExpenseType(this.dataset.etype)">×</span>`}</div>`;
   }).join('');
   document.getElementById('tpl-list').innerHTML=renderTemplateList(state.templates,t=>htmlEscape(t.source)+' · '+htmlEscape(t.category),'openEditTemplate','deleteTemplate');
   if(!state.incTemplates)state.incTemplates=[];
@@ -3164,6 +3405,7 @@ function renderAll(){
   renderSelects();
   renderSettings();
   renderCurrencySelect();
+  renderBudgetCycleSelect();
   const langSel=document.getElementById('lang-select');
   if(langSel)langSel.value=state.lang||'en';
   renderSummary();
@@ -3232,19 +3474,20 @@ function onCloseMonthInput(expected){
 function executeCloseMonth(){
   // Save current balances as snapshot in history
   const now=new Date();
-  const ym=yrMon(now);
+  const range=getCycleRange(now);
+  const ck=cycleKey(range);
   if(!state.balanceHistory)state.balanceHistory=[];
-  // remove duplicate for same month if re-closing
-  state.balanceHistory=state.balanceHistory.filter(h=>h.ym!==ym);
-  state.balanceHistory.push({ym,bank:state.setup?.bank||0,card:state.setup?.card||0,cash:state.setup?.cash||0,savings:state.setup?.savings||0,closedAt:now.toISOString()});
-  // keep only last 24 months
+  // remove duplicate for same cycle if re-closing
+  state.balanceHistory=state.balanceHistory.filter(h=>h.ym!==ck);
+  state.balanceHistory.push({ym:ck,bank:state.setup?.bank||0,card:state.setup?.card||0,cash:state.setup?.cash||0,savings:state.setup?.savings||0,closedAt:now.toISOString()});
+  // keep only last 24
   if(state.balanceHistory.length>24)state.balanceHistory=state.balanceHistory.slice(-24);
-  // Mark recurring as needing re-show next month
+  // Mark recurring as needing re-show next cycle
   state.recurringShownFor=null;
   state.reportShownFor=null;
   save();
   closeCloseMonth();
-  // Reset summary and history views to current month
+  // Reset views to current
   summaryMonth=new Date();
   histMonth=new Date();
   cardMonth=new Date();
@@ -3280,7 +3523,7 @@ function executeFullReset(){
     categories:defaultCats(prevLang),
     incomeTypes:defaultIncomeTypes(prevLang),
     expenseTypes:['STAŁY','ZMIENNY','INWESTYCJA','SZKOŁA','INNY'],
-    templates:[],incTemplates:[],reportShownFor:null,recurringShownFor:null,darkMode:false,budgetLimits:{},goals:[],balanceHistory:[],lastAutoClose:null,lastAutoBackup:null,currency:'£',monthNotes:{},lang:prevLang};
+    templates:[],incTemplates:[],reportShownFor:null,recurringShownFor:null,darkMode:false,budgetLimits:{},goals:[],balanceHistory:[],lastAutoClose:null,lastAutoBackup:null,currency:'£',monthNotes:{},lang:prevLang,budgetCycleDay:0};
   save();
   closeFullReset();
   translateUI();
@@ -3356,7 +3599,7 @@ function isDateValid(d) {
 // ── HELPERS ──────────────────────────────────────────────────────────────────
 function yrMon(d){return`${d.getFullYear()}-${pad(d.getMonth()+1)}`;}
 function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
-function round2(n){return Math.round(n*100)/100;}
+function round2(n){const s=Math.sign(n);return s*Math.round((Math.abs(n)+Number.EPSILON)*100)/100;}
 function genId(){try{return crypto.randomUUID();}catch(e){return Date.now()+'-'+Math.random().toString(36).slice(2);}}
 function htmlEscape(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function buildOptions(items,selectedVal){return items.map(v=>`<option value="${htmlEscape(v)}"${v===selectedVal?' selected':''}>${htmlEscape(v)}</option>`).join('');}
@@ -3521,7 +3764,7 @@ function renderGoals() {
     // urgency / days left
     let urgencyHTML = '', daysLeft = null;
     if (goal.date && !isDone) {
-      const deadline = new Date(goal.date);
+      const deadline = new Date(goal.date + 'T00:00:00'); // local midnight, not UTC
       daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
       if (daysLeft < 0) {
         urgencyHTML = `<span class="goal-urgency-badge goal-urgency-late">⚠️ ${t('goalDaysAgo')} ${Math.abs(daysLeft)} ${t('goalDaysAgoSuffix')}</span>`;
@@ -3595,7 +3838,9 @@ function renderGoals() {
 let budgetMonth = new Date();
 
 function changeBudgetMonth(d) {
-  budgetMonth = new Date(budgetMonth.getFullYear(), budgetMonth.getMonth() + d, 1);
+  const cd=state.budgetCycleDay||0;
+  if(!cd||cd===0){budgetMonth=new Date(budgetMonth.getFullYear(),budgetMonth.getMonth()+d,1);}
+  else{const r=getCycleRange(budgetMonth);if(d>0){const n=new Date(r.end);n.setDate(n.getDate()+1);budgetMonth=n;}else{const p=new Date(r.start);p.setDate(p.getDate()-1);budgetMonth=p;}}
   renderBudget();
 }
 
@@ -3619,8 +3864,8 @@ function deleteBudgetLimit(cat) {
 
 function renderBudget() {
   if (!state.budgetLimits) state.budgetLimits = {};
-  const yr = budgetMonth.getFullYear(), mo = budgetMonth.getMonth();
-  document.getElementById('budget-month-label').textContent = `${months()[mo]} ${yr}`;
+  const range = getCycleRange(budgetMonth);
+  document.getElementById('budget-month-label').textContent = range.label;
 
   // populate category select
   const sel = document.getElementById('budget-cat-sel');
@@ -3630,11 +3875,10 @@ function renderBudget() {
     if (state.categories.includes(prevCat)) sel.value = prevCat;
   }
 
-  // actual spending this month by category
+  // actual spending this cycle by category
   const spent = {};
   state.expenses.filter(e => {
-    const d = new Date(e.date);
-    return d.getFullYear() === yr && d.getMonth() === mo && e.type !== 'SPŁATA KARTY' && e.category && e.category !== '—';
+    return dateInCycle(e.date, range) && e.type !== 'SPŁATA KARTY' && e.category && e.category !== '—';
   }).forEach(e => { spent[e.category] = round2((spent[e.category] || 0) + e.amount); });
 
   // which cats to show: all with a limit + any with spending this month
@@ -3712,11 +3956,13 @@ function renderBudget() {
 let _mpickerTarget=null, _mpickerYear=new Date().getFullYear(), _mpickerOnPick=null;
 
 function openMPicker(target){
+  const cd=state.budgetCycleDay||0;
+  const cycleDay=(!cd||cd===0)?1:cd;
   const targets={
-    summary:{month:summaryMonth,cb:(y,m)=>{summaryMonth=new Date(y,m,1);renderSummary();}},
-    hist:{month:histMonth,cb:(y,m)=>{histMonth=new Date(y,m,1);renderHistory();}},
-    card:{month:cardMonth,cb:(y,m)=>{cardMonth=new Date(y,m,1);renderCard();}},
-    budget:{month:budgetMonth,cb:(y,m)=>{budgetMonth=new Date(y,m,1);renderBudget();}},
+    summary:{month:summaryMonth,cb:(y,m)=>{summaryMonth=new Date(y,m,cycleDay);renderSummary();}},
+    hist:{month:histMonth,cb:(y,m)=>{histMonth=new Date(y,m,cycleDay);renderHistory();}},
+    card:{month:cardMonth,cb:(y,m)=>{cardMonth=new Date(y,m,cycleDay);renderCard();}},
+    budget:{month:budgetMonth,cb:(y,m)=>{budgetMonth=new Date(y,m,cycleDay);renderBudget();}},
   };
   const t=targets[target];if(!t)return;
   _mpickerTarget=target;_mpickerOnPick=t.cb;_mpickerYear=t.month.getFullYear();
@@ -3729,7 +3975,7 @@ function renderMPicker(activeMo){
   document.getElementById('mpicker-year-label').textContent=_mpickerYear;
   document.getElementById('mpicker-months').innerHTML=months().map((m,i)=>{
     const isActive=activeMo>=0&&i===activeMo;
-    return`<div class="mpicker-mo${isActive?' active':''}" onclick="pickMonth(${i})">${m.slice(0,3)}</div>`;
+    return`<div class="mpicker-mo${isActive?' active':''}" tabindex="0" role="button" aria-label="${m}" onclick="pickMonth(${i})" onkeydown="mpickerKey(event,${i})">${m.slice(0,3)}</div>`;
   }).join('');
 }
 
@@ -3742,6 +3988,15 @@ function pickMonth(mo){
   if(_mpickerOnPick)_mpickerOnPick(_mpickerYear,mo);
   document.getElementById('mpicker-overlay').classList.remove('active');
   restoreFocus();
+}
+function mpickerKey(e,i){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();pickMonth(i);return;}
+  let next=-1;
+  if(e.key==='ArrowRight')next=i<11?i+1:0;
+  else if(e.key==='ArrowLeft')next=i>0?i-1:11;
+  else if(e.key==='ArrowDown')next=i+3<=11?i+3:i;
+  else if(e.key==='ArrowUp')next=i-3>=0?i-3:i;
+  if(next>=0){e.preventDefault();const els=document.getElementById('mpicker-months').children;if(els[next])els[next].focus();}
 }
 
 function closeMPicker(e){
@@ -3810,6 +4065,7 @@ function importCSVClick(){document.getElementById('import-csv-file').click();}
 
 function importCSV(event){
   const file=event.target.files[0];if(!file)return;
+  if(file.size>10*1024*1024){toast(t('fileTooLarge'));event.target.value='';return;}
   const reader=new FileReader();
   reader.onload=e=>{
     // snapshot for rollback
@@ -3837,11 +4093,11 @@ function importCSV(event){
         const cols=line.split(sep).map(c=>c.replace(/^"|"$/g,'').trim());
         const dateVal=(cols[iDate]||'').trim();
         const kindVal=(iKind>=0?cols[iKind]||'':'').trim().toLowerCase();
-        const typeVal=(iType>=0?cols[iType]||'':'').trim();
-        const locVal=(iLoc>=0?cols[iLoc]||'Konto':'Konto').trim();
+        const typeVal=(iType>=0?cols[iType]||'':'').trim().slice(0,100);
+        const locVal=(iLoc>=0?cols[iLoc]||'Konto':'Konto').trim().slice(0,100);
         const amtRaw=(iAmt>=0?cols[iAmt]||'0':'0').replace(/[+£€$¥₹\s]/g,'').replace(/^(zł|CHF|kr)/i,'').replace(',','.');
         const amt=parseFloat(amtRaw);
-        const noteVal=(iNote>=0?cols[iNote]||'':'').trim();
+        const noteVal=(iNote>=0?cols[iNote]||'':'').trim().slice(0,500);
         if(!dateVal||isNaN(amt)||Math.abs(amt)<=0){skipped++;return;}
         if(!isDateValid(dateVal)){skipped++;return;}
         if(kindVal.includes('wpływ')||kindVal.includes('income')||amt>0){
@@ -3895,7 +4151,7 @@ function setChartTab(tab){
 }
 
 function changeChartYear(d){chartYear+=d;renderMonthlyChart();}
-function changeCatMonth(d){catChartMonth=new Date(catChartMonth.getFullYear(),catChartMonth.getMonth()+d,1);renderCatsChart();}
+function changeCatMonth(d){const cd=state.budgetCycleDay||0;if(!cd||cd===0){catChartMonth=new Date(catChartMonth.getFullYear(),catChartMonth.getMonth()+d,1);}else{const r=getCycleRange(catChartMonth);if(d>0){const n=new Date(r.end);n.setDate(n.getDate()+1);catChartMonth=n;}else{const p=new Date(r.start);p.setDate(p.getDate()-1);catChartMonth=p;}}renderCatsChart();}
 function changeBalanceYear(d){balanceYear+=d;renderBalanceChart();}
 
 function renderCharts(){
@@ -3930,12 +4186,28 @@ function renderMonthlyChart(){
   ctx.scale(dpr,dpr);
   const w=W, h=200;
 
-  // build data
+  // build data — 12 slots (one per cycle/month in the year)
+  const cd=state.budgetCycleDay||0;
   const expData=Array(12).fill(0), incData=Array(12).fill(0);
-  state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===chartYear&&!isTransferType(e.type);})
-    .forEach(e=>{expData[new Date(e.date).getMonth()]+=e.amount;});
-  state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===chartYear;})
-    .forEach(i=>{incData[new Date(i.date).getMonth()]+=i.amount;});
+  const labels=[];
+  if(!cd||cd===0){
+    state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===chartYear&&!isTransferType(e.type);})
+      .forEach(e=>{expData[new Date(e.date).getMonth()]+=e.amount;});
+    state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===chartYear;})
+      .forEach(i=>{incData[new Date(i.date).getMonth()]+=i.amount;});
+    monthsShort().forEach(s=>labels.push(s));
+  }else{
+    // Build 12 cycles starting from January of chartYear
+    for(let m=0;m<12;m++){
+      const ref=new Date(chartYear,m,cd);
+      const range=getCycleRange(ref);
+      state.expenses.filter(e=>dateInCycle(e.date,range)&&!isTransferType(e.type))
+        .forEach(e=>{expData[m]+=e.amount;});
+      state.incomes.filter(i=>dateInCycle(i.date,range))
+        .forEach(i=>{incData[m]+=i.amount;});
+      labels.push(`${range.start.getDate()}${monthsShort()[range.start.getMonth()]}`);
+    }
+  }
 
   const hasData=expData.some(v=>v>0)||incData.some(v=>v>0);
   if(!hasData){
@@ -3964,7 +4236,6 @@ function renderMonthlyChart(){
   }
 
   // bars
-  const SHORT=monthsShort();
   for(let m=0;m<12;m++){
     const x=padL+m*gap+gap/2;
     // income bar
@@ -3977,10 +4248,10 @@ function renderMonthlyChart(){
     grad.addColorStop(0,'#e2b96f');grad.addColorStop(1,'#c9a055');
     ctx.fillStyle=grad;
     ctx.beginPath();ctxRoundRect(ctx,x+1,padT+chartH-expH,barW,expH,3);ctx.fill();
-    // month label
+    // month/cycle label
     ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text3')||'#718096';
     ctx.font='10px system-ui';ctx.textAlign='center';
-    ctx.fillText(SHORT[m],x,h-padB+14);
+    ctx.fillText(labels[m],x,h-padB+14);
   }
 
   document.getElementById('chart-monthly-legend').innerHTML=`
@@ -3990,10 +4261,10 @@ function renderMonthlyChart(){
 
 // ── DOUGHNUT: Categories ─────────────────────────────────────────────────────
 function renderCatsChart(){
-  const yr=catChartMonth.getFullYear(), mo=catChartMonth.getMonth();
-  document.getElementById('chart-cat-month-label').textContent=`${months()[mo]} ${yr}`;
+  const range=getCycleRange(catChartMonth);
+  document.getElementById('chart-cat-month-label').textContent=range.label;
   const canvas=document.getElementById('chart-cats');
-  canvas.setAttribute('aria-label',`${t('chartCatsLabel')||'Expenses by category'} ${months()[mo]} ${yr}`);
+  canvas.setAttribute('aria-label',`${t('chartCatsLabel')||'Expenses by category'} ${range.label}`);
   const ctx=canvas.getContext('2d');
   const dpr=window.devicePixelRatio||1;
   const SIZE=260;
@@ -4003,8 +4274,7 @@ function renderCatsChart(){
 
   const byCat={};
   state.expenses.filter(e=>{
-    const d=new Date(e.date);
-    return d.getFullYear()===yr&&d.getMonth()===mo&&!isTransferType(e.type)&&e.category!=='—';
+    return dateInCycle(e.date,range)&&!isTransferType(e.type)&&e.category!=='—';
   }).forEach(e=>{byCat[e.category]=(byCat[e.category]||0)+e.amount;});
 
   const entries=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
@@ -4054,11 +4324,26 @@ function renderBalanceChart(){
   ctx.scale(dpr,dpr);
   const w=W, h=200;
 
+  const cd=state.budgetCycleDay||0;
   const incData=Array(12).fill(0), expData=Array(12).fill(0);
-  state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===balanceYear&&!isTransferType(e.type);})
-    .forEach(e=>{expData[new Date(e.date).getMonth()]+=e.amount;});
-  state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===balanceYear;})
-    .forEach(i=>{incData[new Date(i.date).getMonth()]+=i.amount;});
+  const balLabels=[];
+  if(!cd||cd===0){
+    state.expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===balanceYear&&!isTransferType(e.type);})
+      .forEach(e=>{expData[new Date(e.date).getMonth()]+=e.amount;});
+    state.incomes.filter(i=>{const d=new Date(i.date);return d.getFullYear()===balanceYear;})
+      .forEach(i=>{incData[new Date(i.date).getMonth()]+=i.amount;});
+    monthsShort().forEach(s=>balLabels.push(s));
+  }else{
+    for(let m=0;m<12;m++){
+      const ref=new Date(balanceYear,m,cd);
+      const range=getCycleRange(ref);
+      state.expenses.filter(e=>dateInCycle(e.date,range)&&!isTransferType(e.type))
+        .forEach(e=>{expData[m]+=e.amount;});
+      state.incomes.filter(i=>dateInCycle(i.date,range))
+        .forEach(i=>{incData[m]+=i.amount;});
+      balLabels.push(`${range.start.getDate()}${monthsShort()[range.start.getMonth()]}`);
+    }
+  }
   const balData=incData.map((inc,m)=>round2(inc-expData[m]));
 
   const hasData=incData.some(v=>v>0)||expData.some(v=>v>0);
@@ -4107,7 +4392,7 @@ function renderBalanceChart(){
   drawLine(incData,'#38a169','rgba(56,161,105,0.08)');
   drawLine(balData,'#e2b96f',null);
 
-  const SHORT=monthsShort();
+  const SHORT=balLabels;
   SHORT.forEach((s,m)=>{ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text3')||'#718096';ctx.font='10px system-ui';ctx.textAlign='center';ctx.fillText(s,ptX(m),h-padB+14);});
 
   document.getElementById('chart-balance-legend').innerHTML=`
@@ -4212,19 +4497,9 @@ function restoreData(event){
       imported.categories=imported.categories||state.categories;
       imported.incomeTypes=imported.incomeTypes||state.incomeTypes;
       imported.expenseTypes=imported.expenseTypes||state.expenseTypes;
-      imported.darkMode=imported.darkMode??false;
-      imported.reportShownFor=imported.reportShownFor||null;
-      imported.recurringShownFor=imported.recurringShownFor||null;
-      imported.budgetLimits=imported.budgetLimits||{};
       imported.goals=imported.goals||[];
       imported.goals.forEach(g=>{g.deposits=Array.isArray(g.deposits)?g.deposits:[];});
-      imported.balanceHistory=imported.balanceHistory||[];
-      if(imported.lastAutoClose===undefined)imported.lastAutoClose=null;
-      if(imported.lastAutoBackup===undefined)imported.lastAutoBackup=null;
-      if(!imported.currency)imported.currency='£';
-      if(!imported.monthNotes)imported.monthNotes={};
-      if(!imported.lang)imported.lang='en';
-      if(imported.setup && imported.setup.savings === undefined) imported.setup.savings = 0;
+      migrateState(imported);
       if(imported.setup){imported.setup.bank=Number(imported.setup.bank)||0;imported.setup.card=Number(imported.setup.card)||0;imported.setup.cash=Number(imported.setup.cash)||0;imported.setup.savings=Number(imported.setup.savings)||0;}
       state=imported;
       translateUI();
@@ -4255,7 +4530,8 @@ function restoreData(event){
 }
 
 // re-render charts on resize for responsive canvas
-window.addEventListener('resize',()=>{if(document.getElementById('app').classList.contains('active'))scheduleCharts();});
+let _resizeTimer=null;
+window.addEventListener('resize',()=>{clearTimeout(_resizeTimer);_resizeTimer=setTimeout(()=>{if(document.getElementById('app').classList.contains('active'))scheduleCharts();},200);});
 // Cross-tab sync: only fires in localStorage fallback mode (native 'storage' event).
 // When using window.storage API (e.g. Claude artifact), cross-tab sync is not supported.
 window.addEventListener('storage',e=>{
