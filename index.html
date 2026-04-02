@@ -1986,6 +1986,7 @@ function migrateState(s){
   if(s.darkMode===undefined)s.darkMode=false;
   if(s.reportShownFor===undefined)s.reportShownFor=null;
   if(s.recurringShownFor===undefined)s.recurringShownFor=null;
+  if(s.recurringAppliedFor===undefined)s.recurringAppliedFor=null;
   if(s.lastAutoClose===undefined)s.lastAutoClose=null;
   if(s.lastAutoBackup===undefined)s.lastAutoBackup=null;
   if(!s.currency)s.currency='£';
@@ -2268,18 +2269,20 @@ function startApp(){
 function autoApplyRecurring(now){
   // Auto-applies recurring templates on cycle start day — no modal, no interaction required.
   // Works whether app is freshly opened or has been running non-stop.
+  // Uses a dedicated flag 'recurringAppliedFor' (separate from recurringShownFor)
+  // so it never depends on whether a modal was shown.
   if(!state.setup)return;
   const range=getCycleRange(now);
   const cd=state.budgetCycleDay||0;
   const isCycleStart=(!cd||cd===0)?now.getDate()===1:now.getDate()===cd;
   if(!isCycleStart)return;
   const ck=cycleKey(range);
-  if(state.recurringShownFor===ck)return; // already applied this cycle
+  if(state.recurringAppliedFor===ck)return; // already applied this cycle
   const yr=now.getFullYear(),mo=now.getMonth();
   const currentYM=`${yr}-${pad(mo+1)}`;
   const activeExp=(state.templates||[]).filter(t=>!t.endDate||t.endDate>=currentYM);
   const activeInc=(state.incTemplates||[]).filter(t=>!t.endDate||t.endDate>=currentYM);
-  if(!activeExp.length&&!activeInc.length)return;
+  if(!activeExp.length&&!activeInc.length){state.recurringAppliedFor=ck;save();return;}
   let expCount=0,incCount=0;
   activeExp.forEach(tpl=>{
     const day=Math.min(tpl.day,daysInMonth(yr,mo));
@@ -2292,7 +2295,7 @@ function autoApplyRecurring(now){
     const inc={id:genId(),amount:round2(tpl.amount),date:`${yr}-${pad(mo+1)}-${pad(day)}`,dest:tpl.dest,kind:tpl.kind,note:`Auto: ${tpl.name}`};
     state.incomes.push(inc);applyIncomeToBalance(inc);incCount++;
   });
-  state.recurringShownFor=ck;
+  state.recurringAppliedFor=ck;
   save();renderAll();
   const parts=[];
   if(expCount)parts.push(`${expCount} ${t('recurringExpCount')}`);
@@ -3513,6 +3516,7 @@ function executeCloseMonth(){
   if(state.balanceHistory.length>24)state.balanceHistory=state.balanceHistory.slice(-24);
   // Mark recurring as needing re-show next cycle
   state.recurringShownFor=null;
+  state.recurringAppliedFor=null;
   state.reportShownFor=null;
   save();
   closeCloseMonth();
