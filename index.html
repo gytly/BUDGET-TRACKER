@@ -286,7 +286,7 @@
   .accordion-hdr h2{margin-bottom:0;pointer-events:none;}
   .accordion-arrow{font-size:16px;color:var(--text3);transition:transform 0.25s;flex-shrink:0;}
   .accordion-body{overflow:hidden;max-height:0;transition:max-height 0.3s ease;}
-  .accordion-body.open{max-height:2000px;}
+  .accordion-body.open{max-height:none;}
   .section.accordion .accordion-hdr{margin-bottom:0;}
   .section.accordion.open .accordion-arrow{transform:rotate(180deg);}
   .section.accordion.open .accordion-hdr{margin-bottom:16px;}
@@ -2262,11 +2262,48 @@ function startApp(){
   document.getElementById('exp-date').value=today();
   document.getElementById('inc-date').value=today();
   setTimeout(()=>{initChartsObserver();checkModals();},400);
+  setInterval(()=>{checkModals();},60*60*1000);
+}
+
+function autoApplyRecurring(now){
+  // Auto-applies recurring templates on cycle start day — no modal, no interaction required.
+  // Works whether app is freshly opened or has been running non-stop.
+  if(!state.setup)return;
+  const range=getCycleRange(now);
+  const cd=state.budgetCycleDay||0;
+  const isCycleStart=(!cd||cd===0)?now.getDate()===1:now.getDate()===cd;
+  if(!isCycleStart)return;
+  const ck=cycleKey(range);
+  if(state.recurringShownFor===ck)return; // already applied this cycle
+  const yr=now.getFullYear(),mo=now.getMonth();
+  const currentYM=`${yr}-${pad(mo+1)}`;
+  const activeExp=(state.templates||[]).filter(t=>!t.endDate||t.endDate>=currentYM);
+  const activeInc=(state.incTemplates||[]).filter(t=>!t.endDate||t.endDate>=currentYM);
+  if(!activeExp.length&&!activeInc.length)return;
+  let expCount=0,incCount=0;
+  activeExp.forEach(tpl=>{
+    const day=Math.min(tpl.day,daysInMonth(yr,mo));
+    const isTransfer=tpl.source==='SPŁATA KARTY'||tpl.source==='DO_OSZCZĘDNOŚCI'||tpl.source==='Z_OSZCZĘDNOŚCI';
+    const exp={id:genId(),amount:round2(tpl.amount),date:`${yr}-${pad(mo+1)}-${pad(day)}`,source:tpl.source,type:isTransfer?tpl.source:'STAŁY',category:tpl.category,note:`Auto: ${tpl.name}`};
+    state.expenses.push(exp);applyExpenseToBalance(exp);expCount++;
+  });
+  activeInc.forEach(tpl=>{
+    const day=Math.min(tpl.day,daysInMonth(yr,mo));
+    const inc={id:genId(),amount:round2(tpl.amount),date:`${yr}-${pad(mo+1)}-${pad(day)}`,dest:tpl.dest,kind:tpl.kind,note:`Auto: ${tpl.name}`};
+    state.incomes.push(inc);applyIncomeToBalance(inc);incCount++;
+  });
+  state.recurringShownFor=ck;
+  save();renderAll();
+  const parts=[];
+  if(expCount)parts.push(`${expCount} ${t('recurringExpCount')}`);
+  if(incCount)parts.push(`${incCount} ${t('recurringIncCount')}`);
+  toast(`${t('recurringAdded')} ${parts.join(' '+t('recurringAnd')+' ')} ✓`);
 }
 
 function checkModals(){
   const now=new Date();
   autoCloseMonthIfNeeded(now);
+  autoApplyRecurring(now);
   const range=getCycleRange(now);
   const cd=state.budgetCycleDay||0;
   const isCycleStart=(!cd||cd===0)?now.getDate()===1:now.getDate()===cd;
@@ -2284,10 +2321,6 @@ function checkModals(){
     document.getElementById('report-content').innerHTML=buildSummaryHTML(prevDate.getFullYear(),prevDate.getMonth());
     summaryMonth=origSummary;
     document.getElementById('report-modal').classList.add('active');save();focusModal('report-modal');
-  }
-  if(state.recurringShownFor!==ck&&(state.templates.length>0||(state.incTemplates||[]).length>0)){
-    state.recurringShownFor=ck;save();
-    if(!document.getElementById('report-modal').classList.contains('active'))showRecurringModal();
   }
 }
 
@@ -2377,10 +2410,6 @@ function autoCloseMonthIfNeeded(now){
 }
 function closeReport(){
   document.getElementById('report-modal').classList.remove('active');
-  const now=new Date(),range=getCycleRange(now),ck=cycleKey(range);
-  const cd=state.budgetCycleDay||0;
-  const isCycleStart=(!cd||cd===0)?now.getDate()===1:now.getDate()===cd;
-  if(isCycleStart&&state.recurringShownFor===ck&&(state.templates.length>0||(state.incTemplates||[]).length>0))showRecurringModal();
 }
 
 // ── RECURRING ────────────────────────────────────────────────────────────────
